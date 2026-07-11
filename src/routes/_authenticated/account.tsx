@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/use-auth";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/account")({
-  head: () => ({ meta: [{ title: "Account — Vortex" }] }),
+  head: () => ({ meta: [{ title: "Account — Marché" }] }),
   component: Account,
 });
 

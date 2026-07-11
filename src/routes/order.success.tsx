@@ -8,7 +8,7 @@ const search = z.object({ id: z.string().optional() });
 
 export const Route = createFileRoute("/order/success")({
   validateSearch: search,
-  head: () => ({ meta: [{ title: "Order confirmed — Vortex" }] }),
+  head: () => ({ meta: [{ title: "Order confirmed — Marché" }] }),
   component: SuccessPage,
 });
 
@@ -23,7 +23,7 @@ function SuccessPage() {
         <CheckCircle2 className="mx-auto h-14 w-14 text-accent" />
         <h1 className="mt-6 font-display text-4xl">Order confirmed.</h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          Thank you for shopping Vortex. A receipt is on its way.
+          Thank you for shopping Marché. A receipt is on its way.
         </p>
         {id && <p className="mt-2 text-xs text-muted-foreground">Order #{id.slice(0, 8)}</p>}
         <div className="mt-8 flex justify-center gap-3">

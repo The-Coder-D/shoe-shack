@@ -9,7 +9,7 @@ const search = z.object({ next: z.string().optional() });
 
 export const Route = createFileRoute("/auth")({
   validateSearch: search,
-  head: () => ({ meta: [{ title: "Sign in — Vortex" }] }),
+  head: () => ({ meta: [{ title: "Sign in — Marché" }] }),
   component: AuthPage,
 });
 
@@ -114,7 +114,7 @@ function AuthPage() {
 
         <div className="mt-8 text-center text-sm text-muted-foreground">
           {mode === "signin" ? (
-            <>New to Vortex? <button className="text-foreground underline underline-offset-4" onClick={() => setMode("signup")}>Create an account</button></>
+            <>New to Marché? <button className="text-foreground underline underline-offset-4" onClick={() => setMode("signup")}>Create an account</button></>
           ) : (
             <>Already have an account? <button className="text-foreground underline underline-offset-4" onClick={() => setMode("signin")}>Sign in</button></>
           )}

@@ -81,10 +81,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Vortex Footwear — Considered footwear, made for the long walk" },
+      { title: "Marché — Considered footwear, made for the long walk" },
       { name: "description", content: "Premium minimalist sneakers, boots and formal footwear. Designed in India, crafted in small runs." },
-      { name: "author", content: "Vortex Footwear" },
-      { property: "og:title", content: "Vortex Footwear" },
+      { name: "author", content: "Marché" },
+      { property: "og:title", content: "Marché" },
       { property: "og:description", content: "Premium minimalist footwear, made in small runs." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

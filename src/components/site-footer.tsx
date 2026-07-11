@@ -5,7 +5,7 @@ export function SiteFooter() {
     <footer className="mt-24 border-t border-border/60 bg-secondary/40">
       <div className="container-page grid gap-12 py-16 md:grid-cols-4">
         <div>
-          <div className="font-display text-2xl">Vortex<span className="text-accent">.</span></div>
+          <div className="font-display text-2xl">Marché<span className="text-accent">.</span></div>
           <p className="mt-4 max-w-xs text-sm text-muted-foreground">
             Considered footwear, made for the long walk. Designed in Bengaluru, crafted in
             small runs.
@@ -38,7 +38,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-border/60">
         <div className="container-page flex flex-col items-start justify-between gap-2 py-6 text-xs text-muted-foreground md:flex-row md:items-center">
-          <div>© {new Date().getFullYear()} Vortex Footwear. All rights reserved.</div>
+          <div>© {new Date().getFullYear()} Marché. All rights reserved.</div>
           <div>Made with care in India.</div>
         </div>
       </div>
