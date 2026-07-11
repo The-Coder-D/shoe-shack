@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/shipping-returns")({
   head: () => ({
     meta: [
-      { title: "Shipping & Returns — Vortex Footwear" },
+      { title: "Shipping & Returns — Marché" },
       { name: "description", content: "Free shipping across India, 14-day exchanges, and easy returns." },
     ],
   }),

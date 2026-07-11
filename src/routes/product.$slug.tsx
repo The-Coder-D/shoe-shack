@@ -9,8 +9,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/product/$slug")({
   head: ({ params }) => ({
     meta: [
-      { title: `${params.slug.replace(/-/g, " ")} — Vortex` },
-      { property: "og:title", content: `${params.slug.replace(/-/g, " ")} — Vortex` },
+      { title: `${params.slug.replace(/-/g, " ")} — Marché` },
+      { property: "og:title", content: `${params.slug.replace(/-/g, " ")} — Marché` },
     ],
   }),
   component: ProductPage,

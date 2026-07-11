@@ -6,10 +6,10 @@ import { ProductCard } from "@/components/product-card";
 export const Route = createFileRoute("/shop/")({
   head: () => ({
     meta: [
-      { title: "Shop all footwear — Vortex" },
-      { name: "description", content: "Browse the full Vortex collection: sneakers, runners, boots, and formal shoes." },
-      { property: "og:title", content: "Shop all footwear — Vortex" },
-      { property: "og:description", content: "The complete Vortex Footwear collection." },
+      { title: "Shop all footwear — Marché" },
+      { name: "description", content: "Browse the full Marché collection: sneakers, runners, boots, and formal shoes." },
+      { property: "og:title", content: "Shop all footwear — Marché" },
+      { property: "og:description", content: "The complete Marché collection." },
     ],
   }),
   component: ShopIndex,

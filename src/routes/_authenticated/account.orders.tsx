@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatInr } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/account/orders")({
-  head: () => ({ meta: [{ title: "Orders — Vortex" }] }),
+  head: () => ({ meta: [{ title: "Orders — Marché" }] }),
   component: Orders,
 });
 

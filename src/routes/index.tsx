@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { motion } from "motion/react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "@/components/product-card";
 import { ArrowRight } from "lucide-react";
+import floatingShoe from "@/assets/floating-shoe.png";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -27,7 +29,25 @@ function Index() {
   return (
     <div>
       <section className="relative overflow-hidden">
-        <div className="container-page grid gap-10 py-16 md:grid-cols-12 md:py-24">
+        <motion.img
+          src={floatingShoe}
+          alt=""
+          aria-hidden="true"
+          initial={{ y: 0, rotate: -8 }}
+          animate={{ y: [0, -22, 0], rotate: [-8, -6, -8] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          className="pointer-events-none absolute -right-24 top-1/3 z-0 hidden w-[520px] opacity-[0.10] blur-[1px] md:block"
+        />
+        <motion.img
+          src={floatingShoe}
+          alt=""
+          aria-hidden="true"
+          initial={{ y: 0, rotate: 14 }}
+          animate={{ y: [0, 18, 0], rotate: [14, 12, 14] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
+          className="pointer-events-none absolute -left-32 bottom-8 z-0 hidden w-[380px] opacity-[0.07] blur-[1px] md:block"
+        />
+        <div className="container-page relative z-10 grid gap-10 py-16 md:grid-cols-12 md:py-24">
           <div className="md:col-span-6 md:pt-8">
             <div className="eyebrow">Autumn / Winter 26</div>
             <h1 className="mt-6 font-display text-5xl leading-[1.02] md:text-7xl">
@@ -46,7 +66,7 @@ function Index() {
           </div>
           <div className="md:col-span-6">
             <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-secondary">
-              <img src="/images/hero.jpg" alt="Vortex Atlas Low sneaker in cream" width={1600} height={1200} className="h-full w-full object-cover" />
+              <img src="/images/hero.jpg" alt="Marché Atlas Low sneaker in cream" width={1600} height={1200} className="h-full w-full object-cover" />
               <div className="absolute bottom-6 left-6 rounded-sm bg-background/90 px-4 py-3 backdrop-blur">
                 <div className="eyebrow">New</div>
                 <div className="mt-1 font-display text-lg">Atlas Low — Cream</div>

@@ -4,7 +4,7 @@ import { useCart } from "@/lib/cart";
 import { formatInr } from "@/lib/format";
 
 export const Route = createFileRoute("/cart")({
-  head: () => ({ meta: [{ title: "Your bag — Vortex" }] }),
+  head: () => ({ meta: [{ title: "Your bag — Marché" }] }),
   component: CartPage,
 });
 

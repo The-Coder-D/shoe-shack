@@ -6,7 +6,7 @@ import { formatInr } from "@/lib/format";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/checkout")({
-  head: () => ({ meta: [{ title: "Checkout — Vortex" }] }),
+  head: () => ({ meta: [{ title: "Checkout — Marché" }] }),
   component: Checkout,
 });
 

@@ -6,9 +6,9 @@ import { ProductCard } from "@/components/product-card";
 export const Route = createFileRoute("/shop/$category")({
   head: ({ params }) => ({
     meta: [
-      { title: `${cap(params.category)} — Vortex` },
-      { name: "description", content: `Shop ${cap(params.category)} at Vortex Footwear.` },
-      { property: "og:title", content: `${cap(params.category)} — Vortex` },
+      { title: `${cap(params.category)} — Marché` },
+      { name: "description", content: `Shop ${cap(params.category)} at Marché.` },
+      { property: "og:title", content: `${cap(params.category)} — Marché` },
     ],
   }),
   component: CategoryPage,
