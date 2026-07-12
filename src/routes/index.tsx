@@ -1,16 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
+import { useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "@/components/product-card";
 import { ArrowRight } from "lucide-react";
 import floatingShoe from "@/assets/floating-shoe.png";
+import walkingHero from "../../public/videos/walking-hero.mp4.asset.json";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
 function Index() {
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollY } = useScroll();
+  const shoeY1 = useTransform(scrollY, [0, 600], [0, -140]);
+  const shoeY2 = useTransform(scrollY, [0, 600], [0, 90]);
+  const shoeRot1 = useTransform(scrollY, [0, 600], [-8, -2]);
+  const shoeRot2 = useTransform(scrollY, [0, 600], [14, 6]);
+  const shoeScale = useTransform(scrollY, [0, 600], [1, 1.08]);
+
   const { data: featured } = useQuery({
     queryKey: ["featured-products"],
     queryFn: async () => {
@@ -28,24 +38,20 @@ function Index() {
 
   return (
     <div>
-      <section className="relative overflow-hidden">
+      <section ref={heroRef} className="relative overflow-hidden">
         <motion.img
           src={floatingShoe}
           alt=""
           aria-hidden="true"
-          initial={{ y: 0, rotate: -8 }}
-          animate={{ y: [0, -22, 0], rotate: [-8, -6, -8] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-          className="pointer-events-none absolute -right-24 top-1/3 z-0 hidden w-[520px] opacity-[0.10] blur-[1px] md:block"
+          style={{ y: shoeY1, rotate: shoeRot1, scale: shoeScale }}
+          className="pointer-events-none absolute -right-24 top-1/3 z-0 hidden w-[520px] opacity-[0.10] blur-[1px] md:block will-change-transform"
         />
         <motion.img
           src={floatingShoe}
           alt=""
           aria-hidden="true"
-          initial={{ y: 0, rotate: 14 }}
-          animate={{ y: [0, 18, 0], rotate: [14, 12, 14] }}
-          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
-          className="pointer-events-none absolute -left-32 bottom-8 z-0 hidden w-[380px] opacity-[0.07] blur-[1px] md:block"
+          style={{ y: shoeY2, rotate: shoeRot2 }}
+          className="pointer-events-none absolute -left-32 bottom-8 z-0 hidden w-[380px] opacity-[0.07] blur-[1px] md:block will-change-transform"
         />
         <div className="container-page relative z-10 grid gap-10 py-16 md:grid-cols-12 md:py-24">
           <div className="md:col-span-6 md:pt-8">
@@ -71,6 +77,34 @@ function Index() {
                 <div className="eyebrow">New</div>
                 <div className="mt-1 font-display text-lg">Atlas Low — Cream</div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative overflow-hidden bg-primary text-primary-foreground">
+        <div className="container-page grid gap-10 py-20 md:grid-cols-12 md:py-28">
+          <div className="md:col-span-4 md:pt-6">
+            <div className="eyebrow opacity-70">In motion</div>
+            <h2 className="mt-4 font-display text-4xl leading-[1.05] md:text-5xl">
+              Built for<br />the walk<br /><em className="not-italic text-accent">home.</em>
+            </h2>
+            <p className="mt-6 max-w-sm text-sm opacity-75">
+              The Atlas Low, in cream — moving as it was made to. Filmed on the streets of
+              Bengaluru at dusk.
+            </p>
+          </div>
+          <div className="md:col-span-8">
+            <div className="relative aspect-video overflow-hidden rounded-sm">
+              <video
+                src={walkingHero.url}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                className="h-full w-full object-cover"
+              />
             </div>
           </div>
         </div>
