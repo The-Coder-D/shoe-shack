@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion, useScroll, useTransform } from "motion/react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "@/components/product-card";
 import { ArrowRight } from "lucide-react";
 import floatingShoe from "@/assets/floating-shoe.png";
-import walkingHero from "../../public/videos/walking-hero.mp4.asset.json";
+
+const WALKING_VIDEO_SRC = "/videos/walking-hero.mp4";
+const WALKING_VIDEO_POSTER = "/images/walking-hero-poster.jpg";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -14,12 +16,37 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const heroRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoReady, setVideoReady] = useState(false);
   const { scrollY } = useScroll();
   const shoeY1 = useTransform(scrollY, [0, 600], [0, -140]);
   const shoeY2 = useTransform(scrollY, [0, 600], [0, 90]);
   const shoeRot1 = useTransform(scrollY, [0, 600], [-8, -2]);
   const shoeRot2 = useTransform(scrollY, [0, 600], [14, 6]);
   const shoeScale = useTransform(scrollY, [0, 600], [1, 1.08]);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+    el.muted = true;
+    const tryPlay = async () => {
+      try {
+        await el.play();
+        setVideoReady(true);
+      } catch {
+        // Autoplay blocked — poster stays visible; retry on first user gesture.
+        const resume = () => {
+          el.play().then(() => setVideoReady(true)).catch(() => {});
+          window.removeEventListener("pointerdown", resume);
+          window.removeEventListener("touchstart", resume);
+        };
+        window.addEventListener("pointerdown", resume, { once: true });
+        window.addEventListener("touchstart", resume, { once: true });
+      }
+    };
+    if (el.readyState >= 2) tryPlay();
+    else el.addEventListener("loadeddata", tryPlay, { once: true });
+  }, []);
 
   const { data: featured } = useQuery({
     queryKey: ["featured-products"],
@@ -97,13 +124,25 @@ function Index() {
           <div className="md:col-span-8">
             <div className="relative aspect-video overflow-hidden rounded-sm">
               <video
-                src={walkingHero.url}
+                ref={videoRef}
+                src={WALKING_VIDEO_SRC}
+                poster={WALKING_VIDEO_POSTER}
                 autoPlay
                 muted
+                defaultMuted
                 loop
                 playsInline
+                disablePictureInPicture
+                disableRemotePlayback
                 preload="metadata"
-                className="h-full w-full object-cover"
+                aria-label="A person walking in Marché Atlas Low cream sneakers at dusk"
+                className={`h-full w-full object-cover transition-opacity duration-700 ${videoReady ? "opacity-100" : "opacity-0"}`}
+              />
+              <img
+                src={WALKING_VIDEO_POSTER}
+                alt=""
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${videoReady ? "opacity-0" : "opacity-100"}`}
               />
             </div>
           </div>
