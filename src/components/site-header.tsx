@@ -29,16 +29,17 @@ export function SiteHeader() {
     <motion.header
       initial={false}
       animate={{
-        backgroundColor: scrolled ? "color-mix(in oklab, var(--color-background) 85%, transparent)" : "color-mix(in oklab, var(--color-background) 0%, transparent)",
+        backgroundColor: scrolled ? "color-mix(in oklab, var(--color-background) 82%, transparent)" : "color-mix(in oklab, var(--color-background) 0%, transparent)",
         borderColor: scrolled ? "color-mix(in oklab, var(--color-border) 60%, transparent)" : "color-mix(in oklab, var(--color-border) 0%, transparent)",
-        backdropFilter: scrolled ? "blur(14px)" : "blur(0px)",
+        backdropFilter: scrolled ? "blur(16px) saturate(140%)" : "blur(0px) saturate(100%)",
+        boxShadow: scrolled ? "0 8px 30px -18px color-mix(in oklab, var(--color-foreground) 25%, transparent)" : "0 0 0 0 transparent",
       }}
-      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className="sticky top-0 z-40 border-b"
     >
       <motion.div
-        animate={{ height: scrolled ? 56 : 80 }}
-        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        animate={{ height: scrolled ? 60 : 84 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className="container-page flex items-center justify-between gap-6"
       >
         <Link to="/" className="font-display text-2xl tracking-tight">
@@ -59,7 +60,7 @@ export function SiteHeader() {
                 {active && (
                   <motion.span
                     layoutId="nav-pill"
-                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 30, mass: 0.9 }}
                     className="absolute inset-0 -z-10 rounded-full bg-secondary"
                   />
                 )}
