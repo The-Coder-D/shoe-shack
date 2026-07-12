@@ -129,7 +129,6 @@ function Index() {
                 poster={WALKING_VIDEO_POSTER}
                 autoPlay
                 muted
-                defaultMuted
                 loop
                 playsInline
                 disablePictureInPicture
