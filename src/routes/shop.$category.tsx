@@ -40,8 +40,27 @@ function CategoryPage() {
     },
   });
 
+  const skeletonCount =
+    category === "sneakers" ? 6 : category === "boots" ? 2 : category === "formal" ? 1 : 4;
+
   if (isLoading || !data) {
-    return <div className="container-page py-16 text-sm text-muted-foreground">Loading…</div>;
+    return (
+      <div className="container-page py-12 md:py-16">
+        <div className="border-b border-border/60 pb-8">
+          <div className="eyebrow">Collection</div>
+          <h1 className="mt-3 font-display text-5xl capitalize">{category}</h1>
+        </div>
+        <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-10 lg:grid-cols-4">
+          {Array.from({ length: skeletonCount }).map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="aspect-[3/4] w-full rounded-sm bg-secondary/60" />
+              <div className="mt-4 h-3 w-2/3 rounded-sm bg-secondary/60" />
+              <div className="mt-2 h-3 w-1/3 rounded-sm bg-secondary/40" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (
