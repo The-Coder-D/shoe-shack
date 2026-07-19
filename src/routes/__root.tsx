@@ -84,10 +84,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Marché — Considered footwear, made for the long walk" },
       { name: "description", content: "Premium minimalist sneakers, boots and formal footwear. Designed in India, crafted in small runs." },
       { name: "author", content: "Marché" },
-      { property: "og:title", content: "Marché" },
-      { property: "og:description", content: "Premium minimalist footwear, made in small runs." },
+      { property: "og:title", content: "Marché — Considered footwear, made for the long walk" },
+      { property: "og:description", content: "Premium minimalist sneakers, boots and formal footwear. Designed in India, crafted in small runs." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Marché — Considered footwear, made for the long walk" },
+      { name: "twitter:description", content: "Premium minimalist sneakers, boots and formal footwear. Designed in India, crafted in small runs." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/50af7208-e9a3-4900-8237-178b21a81ea1/id-preview-180a7071--f0e92f82-b7a2-42c3-bf29-12c04b9d9410.lovable.app-1783932771011.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/50af7208-e9a3-4900-8237-178b21a81ea1/id-preview-180a7071--f0e92f82-b7a2-42c3-bf29-12c04b9d9410.lovable.app-1783932771011.png" },
     ],
     links: [
       {
