@@ -11,7 +11,7 @@ export function ProductForm({ productId }: Props) {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     slug: "", name: "", description: "", price_inr: 0, compare_at_price_inr: 0,
-    category_id: "", is_active: true, is_featured: false, image_url: "",
+    category_id: "", is_active: true, is_featured: false, image_urls: "",
   });
 
   const { data: categories } = useQuery({
@@ -24,10 +24,14 @@ export function ProductForm({ productId }: Props) {
     (async () => {
       const { data } = await supabase
         .from("products")
-        .select("*, product_images(url)")
+        .select("*, product_images(url, sort_order)")
         .eq("id", productId)
         .maybeSingle();
       if (data) {
+        const orderedUrls = ((data as any).product_images ?? [])
+          .slice()
+          .sort((a: any, b: any) => a.sort_order - b.sort_order)
+          .map((img: any) => img.url);
         setForm({
           slug: data.slug,
           name: data.name,
@@ -37,7 +41,7 @@ export function ProductForm({ productId }: Props) {
           category_id: data.category_id ?? "",
           is_active: data.is_active,
           is_featured: data.is_featured,
-          image_url: (data as any).product_images?.[0]?.url ?? "",
+          image_urls: orderedUrls.join("\n"),
         });
       }
     })();
@@ -68,10 +72,17 @@ export function ProductForm({ productId }: Props) {
         pid = data.id;
       }
 
-      if (form.image_url) {
-        // Replace primary image
+      const urls = form.image_urls
+        .split("\n")
+        .map((u) => u.trim())
+        .filter(Boolean);
+
+      if (urls.length) {
+        // Replace all images with the new ordered set (first = main photo)
         await supabase.from("product_images").delete().eq("product_id", pid!);
-        await supabase.from("product_images").insert({ product_id: pid!, url: form.image_url, sort_order: 0 });
+        await supabase.from("product_images").insert(
+          urls.map((url, i) => ({ product_id: pid!, url, sort_order: i })),
+        );
       }
 
       if (!productId) {
@@ -111,7 +122,16 @@ export function ProductForm({ productId }: Props) {
           </select>
         </label>
       </div>
-      <label className="block space-y-2"><span className="eyebrow">Image URL</span><input className={inp} placeholder="/images/product-1.jpg or https://…" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} /></label>
+      <label className="block space-y-2">
+        <span className="eyebrow">Image URLs (one per line — first one is the main photo)</span>
+        <textarea
+          className={inp}
+          rows={5}
+          placeholder={"https://…/front.jpg\nhttps://…/side.jpg\nhttps://…/back.jpg\nhttps://…/sole.jpg"}
+          value={form.image_urls}
+          onChange={(e) => setForm({ ...form, image_urls: e.target.value })}
+        />
+      </label>
       <div className="flex gap-6">
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} /> Active</label>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_featured} onChange={(e) => setForm({ ...form, is_featured: e.target.checked })} /> Featured</label>
