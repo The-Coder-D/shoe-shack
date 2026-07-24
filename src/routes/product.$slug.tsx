@@ -21,6 +21,7 @@ function ProductPage() {
   const cart = useCart();
   const navigate = useNavigate();
   const [size, setSize] = useState<string | null>(null);
+  const [activeImage, setActiveImage] = useState(0);
 
   const { data, isLoading } = useQuery({
     queryKey: ["product", slug],
@@ -40,7 +41,12 @@ function ProductPage() {
     return <div className="container-page py-16 text-sm text-muted-foreground">Loading…</div>;
   }
 
-  const image = data.product_images?.[0]?.url ?? "/images/product-1.jpg";
+  const images = (data.product_images ?? [])
+    .slice()
+    .sort((a: any, b: any) => a.sort_order - b.sort_order)
+    .map((img: any) => img.url);
+  if (images.length === 0) images.push("/images/product-1.jpg");
+  const image = images[Math.min(activeImage, images.length - 1)];
   const sizes = (data.product_variants ?? []).sort((a: any, b: any) => a.size.localeCompare(b.size));
 
   const onAdd = () => {
@@ -78,6 +84,22 @@ function ProductPage() {
           <div className="aspect-square overflow-hidden rounded-sm bg-secondary">
             <img src={image} alt={data.name} width={1000} height={1000} className="h-full w-full object-cover" />
           </div>
+          {images.length > 1 && (
+            <div className="mt-3 grid grid-cols-4 gap-3">
+              {images.map((url, i) => (
+                <button
+                  key={url + i}
+                  onClick={() => setActiveImage(i)}
+                  className={`aspect-square overflow-hidden rounded-sm bg-secondary transition-opacity ${
+                    i === activeImage ? "opacity-100 ring-2 ring-primary" : "opacity-70 hover:opacity-100"
+                  }`}
+                  aria-label={`Show photo ${i + 1}`}
+                >
+                  <img src={url} alt="" className="h-full w-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         <div className="md:pt-8">
           {data.category && <div className="eyebrow">{(data.category as any).name}</div>}
