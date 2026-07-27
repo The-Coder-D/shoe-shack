@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatInr } from "@/lib/format";
 
 export interface ProductCardData {
@@ -92,7 +92,6 @@ export function ProductCard({ p }: { p: ProductCardData }) {
   );
 }
 
-import { useEffect } from "react";
 function HoverCycler({
   enabled,
   length,
