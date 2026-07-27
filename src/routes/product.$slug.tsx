@@ -1,6 +1,6 @@
 import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatInr } from "@/lib/format";
 import { useCart } from "@/lib/cart";
@@ -93,9 +93,12 @@ function ProductPage() {
     <div className="container-page py-8 md:py-14">
       <div className="grid gap-12 md:grid-cols-2">
         <div>
-          <div className="aspect-square overflow-hidden rounded-sm bg-secondary">
-            <img src={image} alt={data.name} width={1000} height={1000} className="h-full w-full object-cover" />
-          </div>
+          <SwipeGallery
+            images={images}
+            activeImage={activeImage}
+            setActiveImage={setActiveImage}
+            alt={data.name}
+          />
           {images.length > 1 && (
             <div className="mt-3 grid grid-cols-4 gap-3">
               {images.map((url, i) => (
@@ -176,6 +179,87 @@ function ProductPage() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function SwipeGallery({
+  images,
+  activeImage,
+  setActiveImage,
+  alt,
+}: {
+  images: string[];
+  activeImage: number;
+  setActiveImage: (n: number) => void;
+  alt: string;
+}) {
+  const startX = useRef<number | null>(null);
+  const startY = useRef<number | null>(null);
+  const idx = Math.min(activeImage, images.length - 1);
+
+  // Preload next / previous images so swipes feel instant.
+  useEffect(() => {
+    if (typeof window === "undefined" || images.length <= 1) return;
+    const next = (idx + 1) % images.length;
+    const prev = (idx - 1 + images.length) % images.length;
+    [next, prev].forEach((i) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = images[i];
+    });
+  }, [idx, images]);
+
+  const swipeTo = (dir: 1 | -1) => {
+    if (images.length <= 1) return;
+    setActiveImage((idx + dir + images.length) % images.length);
+  };
+
+  return (
+    <div
+      className="relative aspect-square overflow-hidden rounded-sm bg-secondary touch-pan-y select-none"
+      onTouchStart={(e) => {
+        startX.current = e.touches[0].clientX;
+        startY.current = e.touches[0].clientY;
+      }}
+      onTouchEnd={(e) => {
+        if (startX.current == null || startY.current == null) return;
+        const dx = e.changedTouches[0].clientX - startX.current;
+        const dy = e.changedTouches[0].clientY - startY.current;
+        startX.current = null;
+        startY.current = null;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          swipeTo(dx < 0 ? 1 : -1);
+        }
+      }}
+    >
+      {images.map((src, i) => (
+        <img
+          key={src + i}
+          src={src}
+          alt={alt}
+          width={1000}
+          height={1000}
+          loading={i === 0 ? "eager" : "lazy"}
+          decoding="async"
+          draggable={false}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-out ${
+            i === idx ? "opacity-100" : "opacity-0"
+          }`}
+        />
+      ))}
+      {images.length > 1 && (
+        <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5 md:hidden">
+          {images.map((_, i) => (
+            <span
+              key={i}
+              className={`h-1.5 rounded-full transition-all ${
+                i === idx ? "w-6 bg-primary" : "w-1.5 bg-primary/40"
+              }`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
