@@ -4,6 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatInr } from "@/lib/format";
 import { useCart } from "@/lib/cart";
+import { useAuth } from "@/lib/use-auth";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/product/$slug")({
@@ -20,6 +21,7 @@ function ProductPage() {
   const { slug } = Route.useParams();
   const cart = useCart();
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const [size, setSize] = useState<string | null>(null);
   const [activeImage, setActiveImage] = useState(0);
 
@@ -50,6 +52,11 @@ function ProductPage() {
   const sizes = (data.product_variants ?? []).sort((a: any, b: any) => a.size.localeCompare(b.size));
 
   const onAdd = () => {
+    if (!authLoading && !user) {
+      toast.message("Sign in to add to bag", { description: "Create a free account to save your bag and orders." });
+      navigate({ to: "/auth", search: { redirect: `/product/${slug}` } as any });
+      return;
+    }
     if (!size) return toast.error("Choose a size first");
     cart.add({
       productId: data.id,
@@ -64,6 +71,11 @@ function ProductPage() {
   };
 
   const onBuyNow = () => {
+    if (!authLoading && !user) {
+      toast.message("Sign in to continue", { description: "You need an account to check out." });
+      navigate({ to: "/auth", search: { redirect: `/product/${slug}` } as any });
+      return;
+    }
     if (!size) return toast.error("Choose a size first");
     cart.add({
       productId: data.id,
