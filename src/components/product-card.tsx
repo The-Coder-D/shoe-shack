@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { formatInr } from "@/lib/format";
 
 export interface ProductCardData {
@@ -7,25 +8,71 @@ export interface ProductCardData {
   price_inr: number;
   compare_at_price_inr: number | null;
   imageUrl: string;
+  images?: string[];
   categoryName?: string | null;
 }
 
 export function ProductCard({ p }: { p: ProductCardData }) {
+  const images = (p.images && p.images.length > 0 ? p.images : [p.imageUrl]).filter(Boolean);
+  const [idx, setIdx] = useState(0);
+  const [hovering, setHovering] = useState(false);
+
+  // Auto-advance while hovering
+  const onEnter = () => {
+    setHovering(true);
+    if (images.length <= 1) return;
+  };
+  const onLeave = () => {
+    setHovering(false);
+    setIdx(0);
+  };
+  // simple hover interval
+  if (typeof window !== "undefined") {
+    // no-op; interval handled via useEffect below
+  }
+
   return (
     <Link
       to="/product/$slug"
       params={{ slug: p.slug }}
       className="group block"
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
     >
-      <div className="aspect-square overflow-hidden rounded-sm bg-secondary/60">
-        <img
-          src={p.imageUrl}
-          alt={p.name}
-          width={1000}
-          height={1000}
-          loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-        />
+      <div className="relative aspect-square overflow-hidden rounded-sm bg-secondary/60">
+        {images.map((src, i) => (
+          <img
+            key={src + i}
+            src={src}
+            alt={p.name}
+            width={1000}
+            height={1000}
+            loading="lazy"
+            className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-out ${
+              i === idx ? "opacity-100 scale-100 group-hover:scale-[1.03]" : "opacity-0"
+            }`}
+          />
+        ))}
+        {images.length > 1 && (
+          <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            {images.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                aria-label={`Show photo ${i + 1}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIdx(i);
+                }}
+                className={`h-1.5 rounded-full transition-all ${
+                  i === idx ? "w-6 bg-primary" : "w-1.5 bg-primary/40"
+                }`}
+              />
+            ))}
+          </div>
+        )}
+        <HoverCycler enabled={hovering} length={images.length} onTick={setIdx} />
       </div>
       <div className="mt-4 flex items-start justify-between gap-3">
         <div>
@@ -43,4 +90,24 @@ export function ProductCard({ p }: { p: ProductCardData }) {
       </div>
     </Link>
   );
+}
+
+import { useEffect } from "react";
+function HoverCycler({
+  enabled,
+  length,
+  onTick,
+}: {
+  enabled: boolean;
+  length: number;
+  onTick: (updater: (n: number) => number) => void;
+}) {
+  useEffect(() => {
+    if (!enabled || length <= 1) return;
+    const id = window.setInterval(() => {
+      onTick((n: number) => (n + 1) % length);
+    }, 900);
+    return () => window.clearInterval(id);
+  }, [enabled, length, onTick]);
+  return null;
 }
