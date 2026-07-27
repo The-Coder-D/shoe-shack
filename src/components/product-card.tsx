@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { formatInr } from "@/lib/format";
 
 export interface ProductCardData {
@@ -16,20 +16,64 @@ export function ProductCard({ p }: { p: ProductCardData }) {
   const images = (p.images && p.images.length > 0 ? p.images : [p.imageUrl]).filter(Boolean);
   const [idx, setIdx] = useState(0);
   const [hovering, setHovering] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const touchMoved = useRef(false);
 
-  // Auto-advance while hovering
-  const onEnter = () => {
-    setHovering(true);
-    if (images.length <= 1) return;
-  };
+  const onEnter = () => setHovering(true);
   const onLeave = () => {
     setHovering(false);
     setIdx(0);
   };
-  // simple hover interval
-  if (typeof window !== "undefined") {
-    // no-op; interval handled via useEffect below
-  }
+
+  // Preload neighbouring images so the next angle appears instantly.
+  useEffect(() => {
+    if (typeof window === "undefined" || images.length <= 1) return;
+    const next = (idx + 1) % images.length;
+    const prev = (idx - 1 + images.length) % images.length;
+    [next, prev].forEach((i) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = images[i];
+    });
+  }, [idx, images]);
+
+  const swipeTo = (dir: 1 | -1) => {
+    if (images.length <= 1) return;
+    setIdx((n) => (n + dir + images.length) % images.length);
+  };
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    touchStartX.current = t.clientX;
+    touchStartY.current = t.clientY;
+    touchMoved.current = false;
+  };
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (touchStartX.current == null || touchStartY.current == null) return;
+    const dx = e.touches[0].clientX - touchStartX.current;
+    const dy = e.touches[0].clientY - touchStartY.current;
+    if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) touchMoved.current = true;
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current == null) return;
+    const dx = (e.changedTouches[0]?.clientX ?? touchStartX.current) - touchStartX.current;
+    const dy = (e.changedTouches[0]?.clientY ?? (touchStartY.current ?? 0)) - (touchStartY.current ?? 0);
+    touchStartX.current = null;
+    touchStartY.current = null;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+      e.preventDefault();
+      swipeTo(dx < 0 ? 1 : -1);
+    }
+  };
+  const onClickCapture = (e: React.MouseEvent) => {
+    // Prevent navigating to the product when the tap was actually a swipe.
+    if (touchMoved.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      touchMoved.current = false;
+    }
+  };
 
   return (
     <Link
@@ -38,8 +82,14 @@ export function ProductCard({ p }: { p: ProductCardData }) {
       className="group block"
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
+      onClickCapture={onClickCapture}
     >
-      <div className="relative aspect-square overflow-hidden rounded-sm bg-secondary/60">
+      <div
+        className="relative aspect-square overflow-hidden rounded-sm bg-secondary/60 touch-pan-y"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
         {images.map((src, i) => (
           <img
             key={src + i}
@@ -47,14 +97,15 @@ export function ProductCard({ p }: { p: ProductCardData }) {
             alt={p.name}
             width={1000}
             height={1000}
-            loading="lazy"
+            loading={i === 0 ? "eager" : "lazy"}
+            decoding="async"
             className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-out ${
               i === idx ? "opacity-100 scale-100 group-hover:scale-[1.03]" : "opacity-0"
             }`}
           />
         ))}
         {images.length > 1 && (
-          <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          <div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5 opacity-100 md:opacity-0 md:transition-opacity md:duration-300 md:group-hover:opacity-100">
             {images.map((_, i) => (
               <button
                 key={i}
