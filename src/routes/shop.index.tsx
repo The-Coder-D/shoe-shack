@@ -48,6 +48,10 @@ function ShopIndex() {
               price_inr: p.price_inr,
               compare_at_price_inr: p.compare_at_price_inr,
               imageUrl: p.product_images?.[0]?.url ?? "/images/product-1.jpg",
+              images: (p.product_images ?? [])
+                .slice()
+                .sort((a: any, b: any) => a.sort_order - b.sort_order)
+                .map((im: any) => im.url),
               categoryName: p.category?.name,
             }}
           />
