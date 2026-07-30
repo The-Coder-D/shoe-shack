@@ -1,0 +1,5 @@
+DELETE FROM public.product_variants WHERE product_id IN (SELECT id FROM public.products WHERE slug NOT IN ('atlas-low-cream','court-classic-white','metro-slip-black','mesa-chukka-tan','field-derby-cognac'));
+DELETE FROM public.product_images WHERE product_id IN (SELECT id FROM public.products WHERE slug NOT IN ('atlas-low-cream','court-classic-white','metro-slip-black','mesa-chukka-tan','field-derby-cognac'));
+UPDATE public.order_items SET product_id = NULL WHERE product_id IN (SELECT id FROM public.products WHERE slug NOT IN ('atlas-low-cream','court-classic-white','metro-slip-black','mesa-chukka-tan','field-derby-cognac'));
+DELETE FROM public.products WHERE slug NOT IN ('atlas-low-cream','court-classic-white','metro-slip-black','mesa-chukka-tan','field-derby-cognac');
+DELETE FROM public.categories WHERE slug = 'runners';
