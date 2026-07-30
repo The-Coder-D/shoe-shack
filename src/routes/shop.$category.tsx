@@ -41,7 +41,7 @@ function CategoryPage() {
   });
 
   const skeletonCount =
-    category === "sneakers" ? 6 : category === "boots" ? 2 : category === "formal" ? 1 : 4;
+    category === "sneakers" ? 3 : category === "boots" ? 1 : category === "formal" ? 1 : 3;
 
   if (isLoading || !data) {
     return (
