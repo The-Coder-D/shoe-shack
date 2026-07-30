@@ -32,7 +32,7 @@ function CategoryPage() {
       if (!cat) throw notFound();
       const { data: prods, error } = await supabase
         .from("products")
-        .select("slug, name, price_inr, compare_at_price_inr, product_images(url, sort_order)")
+        .select("slug, name, price_inr, compare_at_price_inr, members_only, product_images(url, sort_order)")
         .eq("category_id", cat.id)
         .eq("is_active", true);
       if (error) throw error;
@@ -85,6 +85,7 @@ function CategoryPage() {
                 .sort((a: any, b: any) => a.sort_order - b.sort_order)
                 .map((im: any) => im.url),
               categoryName: data.cat.name,
+              membersOnly: p.members_only,
             }}
           />
         ))}
