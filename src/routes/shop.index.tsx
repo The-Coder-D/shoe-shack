@@ -21,7 +21,7 @@ function ShopIndex() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("slug, name, price_inr, compare_at_price_inr, category:categories(name), product_images(url, sort_order)")
+        .select("slug, name, price_inr, compare_at_price_inr, members_only, category:categories(name), product_images(url, sort_order)")
         .eq("is_active", true)
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -53,6 +53,7 @@ function ShopIndex() {
                 .sort((a: any, b: any) => a.sort_order - b.sort_order)
                 .map((im: any) => im.url),
               categoryName: p.category?.name,
+              membersOnly: p.members_only,
             }}
           />
         ))}
