@@ -7,7 +7,7 @@ export const Route = createFileRoute("/shop/")({
   head: () => ({
     meta: [
       { title: "Shop all footwear — Marché" },
-      { name: "description", content: "Browse the full Marché collection: sneakers, runners, boots, and formal shoes." },
+      { name: "description", content: "Browse the full Marché collection: sneakers, boots, and formal shoes." },
       { property: "og:title", content: "Shop all footwear — Marché" },
       { property: "og:description", content: "The complete Marché collection." },
     ],
