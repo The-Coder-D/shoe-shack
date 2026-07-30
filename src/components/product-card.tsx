@@ -10,6 +10,7 @@ export interface ProductCardData {
   imageUrl: string;
   images?: string[];
   categoryName?: string | null;
+  membersOnly?: boolean;
 }
 
 export function ProductCard({ p }: { p: ProductCardData }) {
@@ -124,6 +125,11 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           </div>
         )}
         <HoverCycler enabled={hovering} length={images.length} onTick={setIdx} />
+        {p.membersOnly && (
+          <span className="absolute left-3 top-3 rounded-full bg-primary/90 px-3 py-1 text-[10px] uppercase tracking-widest text-primary-foreground">
+            Members
+          </span>
+        )}
       </div>
       <div className="mt-4 flex items-start justify-between gap-3">
         <div>
