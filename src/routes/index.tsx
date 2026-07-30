@@ -149,10 +149,9 @@ function Index() {
       </section>
 
       <section className="container-page py-12">
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
           {[
             { label: "Sneakers", to: "/shop/sneakers" },
-            { label: "Runners", to: "/shop/runners" },
             { label: "Boots", to: "/shop/boots" },
             { label: "Formal", to: "/shop/formal" },
           ].map((c) => (
