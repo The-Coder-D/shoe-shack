@@ -13,7 +13,7 @@ export function ProductForm({ productId }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     slug: "", name: "", description: "", price_inr: 0, compare_at_price_inr: 0,
-    category_id: "", is_active: true, is_featured: false, image_urls: "",
+    category_id: "", is_active: true, is_featured: false, members_only: false, image_urls: "",
   });
 
   const { data: categories } = useQuery({
@@ -43,6 +43,7 @@ export function ProductForm({ productId }: Props) {
           category_id: data.category_id ?? "",
           is_active: data.is_active,
           is_featured: data.is_featured,
+          members_only: (data as any).members_only ?? false,
           image_urls: orderedUrls.join("\n"),
         });
       }
@@ -108,6 +109,7 @@ export function ProductForm({ productId }: Props) {
         category_id: form.category_id || null,
         is_active: form.is_active,
         is_featured: form.is_featured,
+        members_only: form.members_only,
       };
 
       let pid = productId;
@@ -221,6 +223,7 @@ export function ProductForm({ productId }: Props) {
       <div className="flex gap-6">
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} /> Active</label>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_featured} onChange={(e) => setForm({ ...form, is_featured: e.target.checked })} /> Featured</label>
+        <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.members_only} onChange={(e) => setForm({ ...form, members_only: e.target.checked })} /> Members only (hidden from signed-out visitors)</label>
       </div>
       <button disabled={loading} className="w-full rounded-full bg-primary py-4 text-sm font-medium text-primary-foreground disabled:opacity-60">
         {loading ? "Saving…" : productId ? "Save changes" : "Create product"}
