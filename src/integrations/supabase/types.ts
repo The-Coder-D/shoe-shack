@@ -246,6 +246,7 @@ export type Database = {
           id: string
           is_active: boolean
           is_featured: boolean
+          members_only: boolean
           name: string
           price_inr: number
           slug: string
@@ -259,6 +260,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_featured?: boolean
+          members_only?: boolean
           name: string
           price_inr: number
           slug: string
@@ -272,6 +274,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_featured?: boolean
+          members_only?: boolean
           name?: string
           price_inr?: number
           slug?: string
