@@ -6,6 +6,7 @@ import { useWishlist } from "@/lib/wishlist";
 import { useAuth } from "@/lib/use-auth";
 
 export interface ProductCardData {
+  productId?: string;
   slug: string;
   name: string;
   price_inr: number;
