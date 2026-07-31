@@ -45,7 +45,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
   const add = useMutation({
     mutationFn: async (productId: string) => {
-      const { error } = await supabase.from("wishlists").insert({ product_id: productId });
+      const { data: userRes } = await supabase.auth.getUser();
+      const uid = userRes.user?.id;
+      if (!uid) throw new Error("Not signed in");
+      const { error } = await supabase.from("wishlists").insert({ product_id: productId, user_id: uid });
       if (error) throw error;
     },
     onSuccess: () => {
