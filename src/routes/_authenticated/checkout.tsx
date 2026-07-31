@@ -43,7 +43,7 @@ function Checkout() {
 
   const applyCoupon = async () => {
     if (!couponCode.trim()) return;
-    const res = await checkCoupon({ code: couponCode.trim().toUpperCase() });
+    const res = await checkCoupon({ data: { code: couponCode.trim().toUpperCase() } });
     if (!res.valid || !res.coupon) {
       toast.error("Invalid or expired coupon");
       setAppliedCoupon(null);
