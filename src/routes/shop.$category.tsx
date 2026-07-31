@@ -2,6 +2,7 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "@/components/product-card";
+import { MembersTeaserCard } from "@/components/members-teaser-card";
 
 export const Route = createFileRoute("/shop/$category")({
   head: ({ params }) => ({
@@ -30,13 +31,24 @@ function CategoryPage() {
         .maybeSingle();
       if (e1) throw e1;
       if (!cat) throw notFound();
-      const { data: prods, error } = await supabase
-        .from("products")
-        .select("slug, name, price_inr, compare_at_price_inr, members_only, product_images(url, sort_order)")
-        .eq("category_id", cat.id)
-        .eq("is_active", true);
+      const { data: prods, error } = await supabase.rpc("get_shop_products_by_category", {
+        _category_slug: category,
+      });
       if (error) throw error;
-      return { cat, prods: prods ?? [] };
+      return {
+        cat,
+        prods: (prods ?? []) as {
+          id: string;
+          slug: string;
+          name: string;
+          price_inr: number | null;
+          compare_at_price_inr: number | null;
+          members_only: boolean;
+          category_name: string | null;
+          first_image: string | null;
+          locked: boolean;
+        }[],
+      };
     },
   });
 
@@ -71,24 +83,34 @@ function CategoryPage() {
         {data.cat.description && <p className="mt-3 max-w-xl text-sm text-muted-foreground">{data.cat.description}</p>}
       </div>
       <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-10 lg:grid-cols-4">
-        {data.prods.map((p: any) => (
-          <ProductCard
-            key={p.slug}
-            p={{
-              slug: p.slug,
-              name: p.name,
-              price_inr: p.price_inr,
-              compare_at_price_inr: p.compare_at_price_inr,
-              imageUrl: p.product_images?.[0]?.url ?? "/images/product-1.jpg",
-              images: (p.product_images ?? [])
-                .slice()
-                .sort((a: any, b: any) => a.sort_order - b.sort_order)
-                .map((im: any) => im.url),
-              categoryName: data.cat.name,
-              membersOnly: p.members_only,
-            }}
-          />
-        ))}
+        {data.prods.map((p) =>
+          p.locked ? (
+            <MembersTeaserCard
+              key={p.slug}
+              p={{
+                slug: p.slug,
+                name: p.name,
+                imageUrl: p.first_image ?? "/images/product-1.jpg",
+                categoryName: data.cat.name,
+              }}
+            />
+          ) : (
+            <ProductCard
+              key={p.slug}
+              p={{
+                productId: p.id,
+                slug: p.slug,
+                name: p.name,
+                price_inr: p.price_inr ?? 0,
+                compare_at_price_inr: p.compare_at_price_inr,
+                imageUrl: p.first_image ?? "/images/product-1.jpg",
+                images: p.first_image ? [p.first_image] : ["/images/product-1.jpg"],
+                categoryName: data.cat.name,
+                membersOnly: p.members_only,
+              }}
+            />
+          ),
+        )}
         {data.prods.length === 0 && (
           <div className="col-span-full py-16 text-center text-sm text-muted-foreground">
             Nothing here yet. Check back soon.

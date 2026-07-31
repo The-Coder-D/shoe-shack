@@ -1,11 +1,13 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ShoppingBag, User, Menu, X } from "lucide-react";
+import { ShoppingBag, User, Heart, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useCart } from "@/lib/cart";
+import { useAuth } from "@/lib/use-auth";
 
 export function SiteHeader() {
   const { count } = useCart();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const path = useRouterState({ select: (s) => s.location.pathname });
@@ -71,13 +73,32 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Link
-            to="/auth"
-            aria-label="Account"
-            className="hidden h-10 w-10 items-center justify-center rounded-full transition-colors duration-300 hover:bg-secondary md:inline-flex"
-          >
-            <User className="h-5 w-5" />
-          </Link>
+          {user ? (
+            <Link
+              to="/account"
+              aria-label="Account"
+              className="hidden h-10 w-10 items-center justify-center rounded-full transition-colors duration-300 hover:bg-secondary md:inline-flex"
+            >
+              <User className="h-5 w-5" />
+            </Link>
+          ) : (
+            <Link
+              to="/auth"
+              aria-label="Sign in"
+              className="hidden h-10 w-10 items-center justify-center rounded-full transition-colors duration-300 hover:bg-secondary md:inline-flex"
+            >
+              <User className="h-5 w-5" />
+            </Link>
+          )}
+          {user && (
+            <Link
+              to="/account"
+              aria-label="Wishlist"
+              className="hidden h-10 w-10 items-center justify-center rounded-full transition-colors duration-300 hover:bg-secondary md:inline-flex"
+            >
+              <Heart className="h-5 w-5" />
+            </Link>
+          )}
           <Link
             to="/cart"
             aria-label="Cart"
@@ -110,7 +131,7 @@ export function SiteHeader() {
             className="overflow-hidden border-t border-border/60 md:hidden"
           >
             <nav className="container-page flex flex-col py-4">
-              {[...nav, { label: "Account", to: "/auth" }].map((n) => (
+              {[...nav, { label: user ? "Account" : "Sign in", to: user ? "/account" : "/auth" }].map((n) => (
                 <Link
                   key={n.to}
                   to={n.to}

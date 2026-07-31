@@ -1,8 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { formatInr } from "@/lib/format";
+import { validateCoupon } from "@/lib/coupons.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/checkout")({
@@ -13,7 +15,15 @@ export const Route = createFileRoute("/_authenticated/checkout")({
 function Checkout() {
   const cart = useCart();
   const navigate = useNavigate();
+  const checkCoupon = useServerFn(validateCoupon);
   const [submitting, setSubmitting] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    discount_inr: number;
+    discount_percent: number;
+    min_order_inr: number;
+  } | null>(null);
   const [form, setForm] = useState({
     full_name: "", phone: "", line1: "", line2: "", city: "", state: "", pincode: "",
   });
@@ -23,7 +33,36 @@ function Checkout() {
 
   const subtotal = cart.subtotalInr;
   const shipping = 0;
-  const total = subtotal + shipping;
+
+  const discount = appliedCoupon
+    ? appliedCoupon.discount_inr > 0
+      ? Math.min(appliedCoupon.discount_inr, subtotal)
+      : Math.round((subtotal * (appliedCoupon.discount_percent ?? 0)) / 100)
+    : 0;
+  const total = Math.max(0, subtotal + shipping - discount);
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    const res = await checkCoupon({ data: { code: couponCode.trim().toUpperCase() } });
+    if (!res.valid || !res.coupon) {
+      toast.error("Invalid or expired coupon");
+      setAppliedCoupon(null);
+      return;
+    }
+    const c = res.coupon;
+    if (c.min_order_inr && subtotal < c.min_order_inr) {
+      toast.error(`Minimum order value is ${formatInr(c.min_order_inr)}`);
+      setAppliedCoupon(null);
+      return;
+    }
+    setAppliedCoupon({
+      code: c.code,
+      discount_inr: c.discount_inr ?? 0,
+      discount_percent: c.discount_percent ?? 0,
+      min_order_inr: c.min_order_inr ?? 0,
+    });
+    toast.success(`${c.code} applied`);
+  };
 
   const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,10 +76,12 @@ function Checkout() {
         .from("orders")
         .insert({
           user_id: uid,
-          status: "paid", // NOTE: Stripe wiring can flip this to 'pending' when enabled
+          status: "paid",
           subtotal_inr: subtotal,
           shipping_inr: shipping,
+          discount_inr: discount,
           total_inr: total,
+          coupon_code: appliedCoupon?.code ?? null,
           shipping_address: form,
         })
         .select("id")
@@ -60,6 +101,7 @@ function Checkout() {
       );
       if (iErr) throw iErr;
 
+      cart.clear();
       navigate({ to: "/order/success", search: { id: order.id } });
     } catch (err: any) {
       toast.error(err.message ?? "Could not place order");
@@ -95,6 +137,34 @@ function Checkout() {
             <input required placeholder="PIN code" className="input" value={form.pincode} onChange={set("pincode")} />
           </div>
 
+          <div className="rounded-sm border border-border/60 bg-secondary/30 p-4">
+            <div className="eyebrow">Coupon code</div>
+            <div className="mt-2 flex gap-2">
+              <input
+                placeholder="e.g. WELCOME200"
+                className="input"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), applyCoupon())}
+              />
+              <button
+                type="button"
+                onClick={applyCoupon}
+                className="rounded-sm border border-primary px-4 text-sm font-medium transition-colors hover:bg-secondary"
+              >
+                Apply
+              </button>
+            </div>
+            {appliedCoupon && (
+              <div className="mt-2 text-xs text-muted-foreground">
+                Applied <span className="font-medium text-foreground">{appliedCoupon.code}</span> —
+                {appliedCoupon.discount_inr > 0
+                  ? ` ₹${appliedCoupon.discount_inr} off`
+                  : ` ${appliedCoupon.discount_percent}% off`}
+              </div>
+            )}
+          </div>
+
           <button disabled={submitting}
             className="mt-4 w-full rounded-full bg-primary py-4 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60">
             {submitting ? "Placing order…" : `Pay ${formatInr(total)}`}
@@ -121,6 +191,12 @@ function Checkout() {
           <div className="mt-6 space-y-2 border-t border-border/60 pt-4 text-sm">
             <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatInr(subtotal)}</span></div>
             <div className="flex justify-between"><span className="text-muted-foreground">Shipping</span><span>Free</span></div>
+            {discount > 0 && (
+              <div className="flex justify-between text-emerald-600">
+                <span className="text-muted-foreground">Discount</span>
+                <span>-{formatInr(discount)}</span>
+              </div>
+            )}
             <div className="flex justify-between border-t border-border/60 pt-2 text-base font-medium"><span>Total</span><span>{formatInr(total)}</span></div>
           </div>
         </aside>

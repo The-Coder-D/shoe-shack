@@ -1,10 +1,15 @@
 import { createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
+import { Heart, Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatInr } from "@/lib/format";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/use-auth";
+import { useWishlist } from "@/lib/wishlist";
+import { useRecentlyViewed } from "@/lib/recently-viewed";
+import { ProductCard } from "@/components/product-card";
+import { RecentlyViewed } from "@/components/recently-viewed";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/product/$slug")({
@@ -22,6 +27,8 @@ function ProductPage() {
   const cart = useCart();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  const { isInWishlist, toggle } = useWishlist();
+  const { record } = useRecentlyViewed();
   const [size, setSize] = useState<string | null>(null);
   const [activeImage, setActiveImage] = useState(0);
 
@@ -39,6 +46,27 @@ function ProductPage() {
     },
   });
 
+  useEffect(() => {
+    if (slug) record(slug);
+  }, [slug, record]);
+
+  const { data: related } = useQuery({
+    queryKey: ["related-products", data?.id, (data?.category as any)?.name],
+    queryFn: async () => {
+      const categoryName = (data?.category as any)?.name;
+      if (!data?.id || !categoryName) return [];
+      const { data: rows, error } = await supabase
+        .from("products")
+        .select("slug, name, price_inr, compare_at_price_inr, members_only, category:categories(name), product_images(url, sort_order)")
+        .neq("id", data.id)
+        .eq("is_active", true)
+        .limit(4);
+      if (error) throw error;
+      return (rows ?? []).filter((p: any) => (p.category as any)?.name === categoryName).slice(0, 4);
+    },
+    enabled: !!data,
+  });
+
   if (isLoading || !data) {
     return <div className="container-page py-16 text-sm text-muted-foreground">Loading…</div>;
   }
@@ -50,6 +78,9 @@ function ProductPage() {
   if (images.length === 0) images.push("/images/product-1.jpg");
   const image = images[Math.min(activeImage, images.length - 1)];
   const sizes = (data.product_variants ?? []).sort((a: any, b: any) => a.size.localeCompare(b.size));
+  const totalStock = sizes.reduce((sum: number, s: any) => sum + (s.stock ?? 0), 0);
+  const lowStock = totalStock > 0 && totalStock <= 5;
+  const liked = isInWishlist(data.id);
 
   const onAdd = () => {
     if (!authLoading && !user) {
@@ -89,6 +120,20 @@ function ProductPage() {
     navigate({ to: "/checkout" });
   };
 
+  const onNotify = async (sizeValue: string) => {
+    if (!user) {
+      toast.message("Sign in to get notified", { description: "We'll email you when your size is back." });
+      navigate({ to: "/auth", search: { redirect: `/product/${slug}` } as any });
+      return;
+    }
+    const { error } = await supabase.from("stock_alerts").insert({ product_id: data.id, size: sizeValue });
+    if (error) {
+      toast.error("Already subscribed or something went wrong");
+      return;
+    }
+    toast.success("We'll email you when this size is back");
+  };
+
   return (
     <div className="container-page py-8 md:py-14">
       <div className="grid gap-12 md:grid-cols-2">
@@ -117,8 +162,29 @@ function ProductPage() {
           )}
         </div>
         <div className="md:pt-8">
-          {data.category && <div className="eyebrow">{(data.category as any).name}</div>}
-          <h1 className="mt-3 font-display text-4xl md:text-5xl">{data.name}</h1>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              {data.category && <div className="eyebrow">{(data.category as any).name}</div>}
+              <h1 className="mt-3 font-display text-4xl md:text-5xl">{data.name}</h1>
+            </div>
+            <button
+              type="button"
+              aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
+              onClick={() => {
+                if (!user) {
+                  toast.message("Sign in to save favourites");
+                  navigate({ to: "/auth", search: { redirect: `/product/${slug}` } as any });
+                  return;
+                }
+                toggle(data.id);
+              }}
+              className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border transition-colors ${
+                liked ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background hover:border-primary"
+              }`}
+            >
+              <Heart className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />
+            </button>
+          </div>
           <div className="mt-4 flex items-baseline gap-3">
             <div className="text-xl font-medium">{formatInr(data.price_inr)}</div>
             {data.compare_at_price_inr && data.compare_at_price_inr > data.price_inr && (
@@ -129,7 +195,13 @@ function ProductPage() {
           </div>
           {data.description && <p className="mt-6 text-sm leading-relaxed text-muted-foreground">{data.description}</p>}
 
-          <div className="mt-10">
+          {lowStock && (
+            <div className="mt-6 text-xs font-medium text-amber-600">
+              Only a few pairs left — order soon.
+            </div>
+          )}
+
+          <div className="mt-8">
             <div className="flex items-center justify-between">
               <div className="eyebrow">Size (UK)</div>
               <button className="text-xs underline underline-offset-4">Size guide</button>
@@ -139,20 +211,31 @@ function ProductPage() {
                 const outOfStock = s.stock <= 0;
                 const selected = size === s.size;
                 return (
-                  <button
-                    key={s.size}
-                    disabled={outOfStock}
-                    onClick={() => setSize(s.size)}
-                    className={`rounded-sm border px-3 py-3 text-sm transition-colors ${
-                      selected
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : outOfStock
-                          ? "cursor-not-allowed border-border/50 text-muted-foreground line-through"
-                          : "border-border hover:border-primary"
-                    }`}
-                  >
-                    {s.size.replace("UK ", "")}
-                  </button>
+                  <div key={s.size} className="relative">
+                    <button
+                      disabled={outOfStock}
+                      onClick={() => setSize(s.size)}
+                      className={`w-full rounded-sm border px-3 py-3 text-sm transition-colors ${
+                        selected
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : outOfStock
+                            ? "cursor-not-allowed border-border/50 text-muted-foreground line-through"
+                            : "border-border hover:border-primary"
+                      }`}
+                    >
+                      {s.size.replace("UK ", "")}
+                    </button>
+                    {outOfStock && (
+                      <button
+                        type="button"
+                        onClick={() => onNotify(s.size)}
+                        aria-label={`Notify when size ${s.size} is back`}
+                        className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[9px] text-primary-foreground shadow-sm"
+                      >
+                        <Bell className="h-2.5 w-2.5" />
+                      </button>
+                    )}
+                  </div>
                 );
               })}
             </div>
@@ -179,6 +262,36 @@ function ProductPage() {
           </div>
         </div>
       </div>
+
+      {related && related.length > 0 && (
+        <section className="mt-20 border-t border-border/60 py-16 md:py-24">
+          <div className="eyebrow">You may also like</div>
+          <h2 className="mt-3 font-display text-3xl md:text-4xl">Complete the look.</h2>
+          <div className="mt-8 grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-10 lg:grid-cols-4">
+            {related.map((p: any) => (
+              <ProductCard
+                key={p.slug}
+                p={{
+                  productId: p.id,
+                  slug: p.slug,
+                  name: p.name,
+                  price_inr: p.price_inr,
+                  compare_at_price_inr: p.compare_at_price_inr,
+                  imageUrl: p.product_images?.[0]?.url ?? "/images/product-1.jpg",
+                  images: (p.product_images ?? [])
+                    .slice()
+                    .sort((a: any, b: any) => a.sort_order - b.sort_order)
+                    .map((im: any) => im.url),
+                  categoryName: (p.category as any)?.name,
+                  membersOnly: p.members_only,
+                }}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <RecentlyViewed slugs={useRecentlyViewed().slugs} />
     </div>
   );
 }
