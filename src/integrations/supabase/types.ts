@@ -83,6 +83,51 @@ export type Database = {
         }
         Relationships: []
       }
+      coupons: {
+        Row: {
+          code: string
+          created_at: string
+          discount_inr: number | null
+          discount_percent: number | null
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          is_welcome: boolean
+          min_order_inr: number
+          updated_at: string
+          usage_limit: number | null
+          used_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          discount_inr?: number | null
+          discount_percent?: number | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          is_welcome?: boolean
+          min_order_inr?: number
+          updated_at?: string
+          usage_limit?: number | null
+          used_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          discount_inr?: number | null
+          discount_percent?: number | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          is_welcome?: boolean
+          min_order_inr?: number
+          updated_at?: string
+          usage_limit?: number | null
+          used_count?: number
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           id: string
@@ -243,6 +288,7 @@ export type Database = {
           compare_at_price_inr: number | null
           created_at: string
           description: string | null
+          drop_date: string | null
           id: string
           is_active: boolean
           is_featured: boolean
@@ -257,6 +303,7 @@ export type Database = {
           compare_at_price_inr?: number | null
           created_at?: string
           description?: string | null
+          drop_date?: string | null
           id?: string
           is_active?: boolean
           is_featured?: boolean
@@ -271,6 +318,7 @@ export type Database = {
           compare_at_price_inr?: number | null
           created_at?: string
           description?: string | null
+          drop_date?: string | null
           id?: string
           is_active?: boolean
           is_featured?: boolean
@@ -314,6 +362,44 @@ export type Database = {
         }
         Relationships: []
       }
+      stock_alerts: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          is_notified: boolean
+          product_id: string
+          size: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_notified?: boolean
+          product_id: string
+          size?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_notified?: boolean
+          product_id?: string
+          size?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_alerts_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -334,6 +420,35 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      wishlists: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wishlists_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
