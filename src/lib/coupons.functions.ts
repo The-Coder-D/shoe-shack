@@ -4,9 +4,8 @@ import { z } from "zod";
 export const validateCoupon = createServerFn({ method: "GET" })
   .inputValidator((data) => z.object({ code: z.string().min(1) }).parse(data))
   .handler(async ({ data }) => {
-    const { createPrivilegedClient } = await import("@/integrations/supabase/client.server");
-    const supabase = createPrivilegedClient();
-    const { data: rows, error } = await supabase.rpc("validate_coupon", { _code: data.code });
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows, error } = await supabaseAdmin.rpc("validate_coupon", { _code: data.code });
     if (error) throw new Error(error.message);
     const coupon = rows?.[0] ?? null;
     if (!coupon) return { valid: false, coupon: null };
