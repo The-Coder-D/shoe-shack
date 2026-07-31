@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "@/components/product-card";
+import { MembersTeaserCard } from "@/components/members-teaser-card";
 
 export const Route = createFileRoute("/shop/")({
   head: () => ({
@@ -19,13 +20,19 @@ function ShopIndex() {
   const { data } = useQuery({
     queryKey: ["shop-all"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("products")
-        .select("slug, name, price_inr, compare_at_price_inr, members_only, category:categories(name), product_images(url, sort_order)")
-        .eq("is_active", true)
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.rpc("get_shop_products");
       if (error) throw error;
-      return data ?? [];
+      return (data ?? []) as {
+        id: string;
+        slug: string;
+        name: string;
+        price_inr: number | null;
+        compare_at_price_inr: number | null;
+        members_only: boolean;
+        category_name: string | null;
+        first_image: string | null;
+        locked: boolean;
+      }[];
     },
   });
 
@@ -39,24 +46,34 @@ function ShopIndex() {
         </p>
       </div>
       <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-10 lg:grid-cols-4">
-        {(data ?? []).map((p: any) => (
-          <ProductCard
-            key={p.slug}
-            p={{
-              slug: p.slug,
-              name: p.name,
-              price_inr: p.price_inr,
-              compare_at_price_inr: p.compare_at_price_inr,
-              imageUrl: p.product_images?.[0]?.url ?? "/images/product-1.jpg",
-              images: (p.product_images ?? [])
-                .slice()
-                .sort((a: any, b: any) => a.sort_order - b.sort_order)
-                .map((im: any) => im.url),
-              categoryName: p.category?.name,
-              membersOnly: p.members_only,
-            }}
-          />
-        ))}
+        {(data ?? []).map((p) =>
+          p.locked ? (
+            <MembersTeaserCard
+              key={p.slug}
+              p={{
+                slug: p.slug,
+                name: p.name,
+                imageUrl: p.first_image ?? "/images/product-1.jpg",
+                categoryName: p.category_name,
+              }}
+            />
+          ) : (
+            <ProductCard
+              key={p.slug}
+              p={{
+                productId: p.id,
+                slug: p.slug,
+                name: p.name,
+                price_inr: p.price_inr ?? 0,
+                compare_at_price_inr: p.compare_at_price_inr,
+                imageUrl: p.first_image ?? "/images/product-1.jpg",
+                images: p.first_image ? [p.first_image] : ["/images/product-1.jpg"],
+                categoryName: p.category_name,
+                membersOnly: p.members_only,
+              }}
+            />
+          ),
+        )}
       </div>
     </div>
   );
