@@ -23,6 +23,9 @@ export function ProductCard({ p }: { p: ProductCardData }) {
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
   const touchMoved = useRef(false);
+  const { user } = useAuth();
+  const { isInWishlist, toggle } = useWishlist();
+  const liked = isInWishlist(p.productId ?? p.slug);
 
   const onEnter = () => setHovering(true);
   const onLeave = () => {
@@ -79,6 +82,16 @@ export function ProductCard({ p }: { p: ProductCardData }) {
     }
   };
 
+  const onHeartClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) {
+      // Let the link handle navigation to auth if needed; otherwise just toggle.
+      return;
+    }
+    toggle(p.productId ?? p.slug);
+  };
+
   return (
     <Link
       to="/product/$slug"
@@ -133,6 +146,18 @@ export function ProductCard({ p }: { p: ProductCardData }) {
             Members
           </span>
         )}
+        <button
+          type="button"
+          aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
+          onClick={onHeartClick}
+          className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full transition-all ${
+            liked
+              ? "bg-primary text-primary-foreground"
+              : "bg-background/80 text-foreground opacity-0 backdrop-blur-sm group-hover:opacity-100"
+          }`}
+        >
+          <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
+        </button>
       </div>
       <div className="mt-4 flex items-start justify-between gap-3">
         <div>
