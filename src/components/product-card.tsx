@@ -1,6 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { Heart } from "lucide-react";
 import { formatInr } from "@/lib/format";
+import { useWishlist } from "@/lib/wishlist";
+import { useAuth } from "@/lib/use-auth";
 
 export interface ProductCardData {
   slug: string;
