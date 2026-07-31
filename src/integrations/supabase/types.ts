@@ -455,6 +455,36 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_shop_products: {
+        Args: never
+        Returns: {
+          category_id: string
+          category_name: string
+          compare_at_price_inr: number
+          first_image: string
+          id: string
+          locked: boolean
+          members_only: boolean
+          name: string
+          price_inr: number
+          slug: string
+        }[]
+      }
+      get_shop_products_by_category: {
+        Args: { _category_slug: string }
+        Returns: {
+          category_id: string
+          category_name: string
+          compare_at_price_inr: number
+          first_image: string
+          id: string
+          locked: boolean
+          members_only: boolean
+          name: string
+          price_inr: number
+          slug: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
