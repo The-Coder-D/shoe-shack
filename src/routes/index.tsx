@@ -6,11 +6,26 @@ import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "@/components/product-card";
 import { ArrowRight } from "lucide-react";
 import floatingShoe from "@/assets/floating-shoe.png";
+import { AnimatedContent, CountUp, Magnetic, ShinyText, SplitText, StaggerGrid, StaggerItem, TiltCard } from "@/components/animate";
 
 const WALKING_VIDEO_SRC = "/videos/walking-hero.mp4";
 const WALKING_VIDEO_POSTER = "/images/walking-hero-poster.jpg";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Marché — Premium minimal sneakers, boots & formal shoes" },
+      {
+        name: "description",
+        content:
+          "Marché makes considered footwear in small runs: cream leather sneakers, chukka boots and derbies. Free shipping across India, 14-day exchanges.",
+      },
+      { property: "og:title", content: "Marché — Premium minimal sneakers, boots & formal shoes" },
+      { property: "og:description", content: "Considered footwear made in small runs. Designed in Bengaluru, shipped free across India." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Index,
 });
 
@@ -82,29 +97,50 @@ function Index() {
         />
         <div className="container-page relative z-10 grid gap-10 py-16 md:grid-cols-12 md:py-24">
           <div className="md:col-span-6 md:pt-8">
-            <div className="eyebrow">Autumn / Winter 26</div>
+            <div className="eyebrow">
+              <ShinyText>Autumn / Winter 26</ShinyText>
+            </div>
             <h1 className="mt-6 font-display text-5xl leading-[1.02] md:text-7xl">
-              Considered<br />footwear,<br />made for<br /><em className="text-accent not-italic">the long walk.</em>
+              <SplitText text="Considered" className="block" />
+              <SplitText text="footwear," className="block" delay={0.08} />
+              <SplitText text="made for" className="block" delay={0.16} />
+              <SplitText text="the long walk." className="block text-accent" delay={0.24} />
             </h1>
-            <p className="mt-8 max-w-md text-muted-foreground">
+            <AnimatedContent delay={0.35} className="mt-8 max-w-md text-muted-foreground">
               Premium sneakers, boots and formal shoes — designed in Bengaluru, crafted
               in small runs from full-grain leather and heritage textiles.
-            </p>
-            <div className="mt-10 flex flex-wrap items-center gap-4">
-              <Link to="/shop" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90">
-                Shop the collection <ArrowRight className="h-4 w-4" />
+            </AnimatedContent>
+            <AnimatedContent delay={0.45} className="mt-10 flex flex-wrap items-center gap-4">
+              <Magnetic strength={0.2}>
+                <Link
+                  to="/shop"
+                  className="press group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+                >
+                  Shop the collection
+                  <ArrowRight className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1" />
+                </Link>
+              </Magnetic>
+              <Link to="/about" className="link-sweep text-sm">
+                Our story
               </Link>
-              <Link to="/about" className="text-sm underline underline-offset-4">Our story</Link>
-            </div>
+            </AnimatedContent>
           </div>
           <div className="md:col-span-6">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-secondary">
-              <img src="/images/hero.jpg" alt="Marché Atlas Low sneaker in cream" width={1600} height={1200} className="h-full w-full object-cover" />
-              <div className="absolute bottom-6 left-6 rounded-sm bg-background/90 px-4 py-3 backdrop-blur">
-                <div className="eyebrow">New</div>
-                <div className="mt-1 font-display text-lg">Atlas Low — Cream</div>
-              </div>
-            </div>
+            <AnimatedContent delay={0.15} y={40}>
+              <TiltCard className="group relative aspect-[4/5] overflow-hidden rounded-sm bg-secondary">
+                <img
+                  src="/images/hero.jpg"
+                  alt="Marché Atlas Low sneaker in cream"
+                  width={1600}
+                  height={1200}
+                  className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
+                />
+                <div className="absolute bottom-6 left-6 rounded-sm bg-background/90 px-4 py-3 backdrop-blur transition-transform duration-700 ease-out group-hover:-translate-y-1">
+                  <div className="eyebrow">New</div>
+                  <div className="mt-1 font-display text-lg">Atlas Low — Cream</div>
+                </div>
+              </TiltCard>
+            </AnimatedContent>
           </div>
         </div>
       </section>
@@ -114,15 +150,17 @@ function Index() {
           <div className="md:col-span-4 md:pt-6">
             <div className="eyebrow opacity-70">In motion</div>
             <h2 className="mt-4 font-display text-4xl leading-[1.05] md:text-5xl">
-              Built for<br />the walk<br /><em className="not-italic text-accent">home.</em>
+              <SplitText text="Built for" className="block" />
+              <SplitText text="the walk" className="block" delay={0.08} />
+              <SplitText text="home." className="block text-accent" delay={0.16} />
             </h2>
-            <p className="mt-6 max-w-sm text-sm opacity-75">
+            <AnimatedContent delay={0.25} className="mt-6 max-w-sm text-sm opacity-75">
               The Atlas Low, in cream — moving as it was made to. Filmed on the streets of
               Bengaluru at dusk.
-            </p>
+            </AnimatedContent>
           </div>
           <div className="md:col-span-8">
-            <div className="relative aspect-video overflow-hidden rounded-sm">
+            <AnimatedContent y={40} className="relative aspect-video overflow-hidden rounded-sm">
               <video
                 ref={videoRef}
                 src={WALKING_VIDEO_SRC}
@@ -143,42 +181,52 @@ function Index() {
                 aria-hidden="true"
                 className={`pointer-events-none absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${videoReady ? "opacity-0" : "opacity-100"}`}
               />
-            </div>
+            </AnimatedContent>
           </div>
         </div>
       </section>
 
       <section className="container-page py-12">
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+        <StaggerGrid className="grid grid-cols-2 gap-3 md:grid-cols-3">
           {[
             { label: "Sneakers", to: "/shop/sneakers" },
             { label: "Boots", to: "/shop/boots" },
             { label: "Formal", to: "/shop/formal" },
           ].map((c) => (
-            <Link key={c.to} to={c.to} className="group relative flex aspect-[4/3] items-end overflow-hidden rounded-sm border border-border/60 bg-secondary p-5 transition-colors hover:bg-secondary/70">
-              <div>
-                <div className="eyebrow">Shop</div>
-                <div className="mt-1 font-display text-2xl">{c.label}</div>
-              </div>
-              <ArrowRight className="absolute right-5 top-5 h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
-            </Link>
+            <StaggerItem key={c.to}>
+              <Link
+                to={c.to}
+                className="hover-lift group relative flex aspect-[4/3] items-end overflow-hidden rounded-sm border border-border/60 bg-secondary p-5 transition-colors hover:bg-secondary/70"
+              >
+                <span className="pointer-events-none absolute inset-0 -translate-y-full bg-primary/5 transition-transform duration-700 ease-out group-hover:translate-y-0" />
+                <div className="relative">
+                  <div className="eyebrow">Shop</div>
+                  <div className="mt-1 font-display text-2xl">
+                    <span className="link-sweep">{c.label}</span>
+                  </div>
+                </div>
+                <ArrowRight className="absolute right-5 top-5 h-4 w-4 -translate-x-2 opacity-0 transition-all duration-500 ease-out group-hover:translate-x-0 group-hover:opacity-100" />
+              </Link>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerGrid>
       </section>
 
       <section className="container-page py-16 md:py-24">
-        <div className="flex items-end justify-between">
+        <AnimatedContent className="flex items-end justify-between">
           <div>
             <div className="eyebrow">Featured</div>
-            <h2 className="mt-3 font-display text-4xl md:text-5xl">This month.</h2>
+            <SplitText as="h2" text="This month." className="mt-3 block font-display text-4xl md:text-5xl" />
           </div>
-          <Link to="/shop" className="hidden text-sm underline underline-offset-4 md:inline">View all</Link>
-        </div>
-        <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
+          <Link to="/shop" className="link-sweep hidden text-sm md:inline">
+            View all
+          </Link>
+        </AnimatedContent>
+        <StaggerGrid className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
           {(featured ?? []).map((p: any) => (
-            <ProductCard
-              key={p.slug}
-              p={{
+            <StaggerItem key={p.slug}>
+              <ProductCard
+                p={{
                 slug: p.slug,
                 name: p.name,
                 price_inr: p.price_inr,
@@ -189,25 +237,30 @@ function Index() {
                   .sort((a: any, b: any) => a.sort_order - b.sort_order)
                   .map((im: any) => im.url),
                 categoryName: p.category?.name,
-              }}
-            />
+                }}
+              />
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerGrid>
       </section>
 
       <section className="border-y border-border/60 bg-secondary/40">
-        <div className="container-page grid gap-8 py-16 md:grid-cols-3 md:py-24">
+        <StaggerGrid className="container-page grid gap-8 py-16 md:grid-cols-3 md:py-24">
           {[
-            { t: "Made in small runs", d: "No overproduction. Every pair is stitched to order in workshops we know by name." },
-            { t: "Full-grain leather", d: "Sourced from tanneries certified by the Leather Working Group." },
-            { t: "Free shipping in India", d: "Two-day delivery to metros. 14-day exchanges, no questions asked." },
+            { t: "Made in small runs", d: "No overproduction. Every pair is stitched to order in workshops we know by name.", n: 12, suffix: " workshops" },
+            { t: "Full-grain leather", d: "Sourced from tanneries certified by the Leather Working Group.", n: 100, suffix: "% full-grain" },
+            { t: "Free shipping in India", d: "Two-day delivery to metros. 14-day exchanges, no questions asked.", n: 14, suffix: "-day exchanges" },
           ].map((b) => (
-            <div key={b.t}>
+            <StaggerItem key={b.t}>
               <div className="font-display text-2xl">{b.t}</div>
               <p className="mt-3 text-sm text-muted-foreground">{b.d}</p>
-            </div>
+              <div className="mt-4 text-xs uppercase tracking-widest text-accent">
+                <CountUp to={b.n} />
+                {b.suffix}
+              </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerGrid>
       </section>
     </div>
   );

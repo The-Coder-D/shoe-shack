@@ -157,3 +157,76 @@
   text-transform: uppercase;
   color: var(--color-muted-foreground);
 }
+
+/* ---------- Motion utilities ---------- */
+
+@keyframes shiny-sweep {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+.shiny-text {
+  background: linear-gradient(
+    100deg,
+    var(--color-muted-foreground) 30%,
+    var(--color-accent) 50%,
+    var(--color-muted-foreground) 70%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shiny-sweep 5s linear infinite;
+}
+
+/* Underline that draws in from the left on hover */
+@utility link-sweep {
+  position: relative;
+  display: inline-block;
+}
+.link-sweep::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 1px;
+  width: 100%;
+  background-color: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.link-sweep:hover::after {
+  transform: scaleX(1);
+}
+
+/* Gentle lift + shadow on hover */
+@utility hover-lift {
+  transition:
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px -24px color-mix(in oklab, var(--color-foreground) 45%, transparent);
+}
+
+/* Press feedback for primary actions */
+@utility press {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+}
+.press:active {
+  transform: scale(0.97);
+}
+
+/* Label that slides up and swaps on hover */
+@utility swap-label {
+  position: relative;
+  display: inline-flex;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shiny-text { animation: none; }
+  .hover-lift:hover { transform: none; }
+}

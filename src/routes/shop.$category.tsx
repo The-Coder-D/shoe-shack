@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "@/components/product-card";
 import { MembersTeaserCard } from "@/components/members-teaser-card";
+import { AnimatedContent, ShinyText, SplitText, StaggerGrid, StaggerItem } from "@/components/animate";
 
 export const Route = createFileRoute("/shop/$category")({
   head: ({ params }) => ({
@@ -77,27 +78,30 @@ function CategoryPage() {
 
   return (
     <div className="container-page py-12 md:py-16">
-      <div className="border-b border-border/60 pb-8">
-        <div className="eyebrow">Collection</div>
-        <h1 className="mt-3 font-display text-5xl">{data.cat.name}</h1>
+      <AnimatedContent className="border-b border-border/60 pb-8">
+        <div className="eyebrow">
+          <ShinyText>Collection</ShinyText>
+        </div>
+        <SplitText as="h1" text={data.cat.name} by="char" stagger={0.03} className="mt-3 block font-display text-5xl" />
         {data.cat.description && <p className="mt-3 max-w-xl text-sm text-muted-foreground">{data.cat.description}</p>}
-      </div>
-      <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-10 lg:grid-cols-4">
+      </AnimatedContent>
+      <StaggerGrid className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-10 lg:grid-cols-4">
         {data.prods.map((p) =>
           p.locked ? (
-            <MembersTeaserCard
-              key={p.slug}
-              p={{
+            <StaggerItem key={p.slug}>
+              <MembersTeaserCard
+                p={{
                 slug: p.slug,
                 name: p.name,
                 imageUrl: p.first_image ?? "/images/product-1.jpg",
                 categoryName: data.cat.name,
-              }}
-            />
+                }}
+              />
+            </StaggerItem>
           ) : (
-            <ProductCard
-              key={p.slug}
-              p={{
+            <StaggerItem key={p.slug}>
+              <ProductCard
+                p={{
                 productId: p.id,
                 slug: p.slug,
                 name: p.name,
@@ -107,8 +111,9 @@ function CategoryPage() {
                 images: p.first_image ? [p.first_image] : ["/images/product-1.jpg"],
                 categoryName: data.cat.name,
                 membersOnly: p.members_only,
-              }}
-            />
+                }}
+              />
+            </StaggerItem>
           ),
         )}
         {data.prods.length === 0 && (
@@ -116,7 +121,7 @@ function CategoryPage() {
             Nothing here yet. Check back soon.
           </div>
         )}
-      </div>
+      </StaggerGrid>
     </div>
   );
 }
