@@ -97,7 +97,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
     <Link
       to="/product/$slug"
       params={{ slug: p.slug }}
-      className="group block"
+      className="group block hover-lift"
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
       onClickCapture={onClickCapture}
@@ -143,7 +143,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
         )}
         <HoverCycler enabled={hovering} length={images.length} onTick={setIdx} />
         {p.membersOnly && (
-          <span className="absolute left-3 top-3 rounded-full bg-primary/90 px-3 py-1 text-[10px] uppercase tracking-widest text-primary-foreground">
+          <span className="absolute left-3 top-3 rounded-full bg-primary/90 px-3 py-1 text-[10px] uppercase tracking-widest text-primary-foreground transition-transform duration-500 group-hover:-translate-y-0.5">
             Members
           </span>
         )}
@@ -151,7 +151,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           type="button"
           aria-label={liked ? "Remove from wishlist" : "Add to wishlist"}
           onClick={onHeartClick}
-          className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full transition-all ${
+          className={`press absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full transition-all duration-500 hover:scale-110 ${
             liked
               ? "bg-primary text-primary-foreground"
               : "bg-background/80 text-foreground opacity-0 backdrop-blur-sm group-hover:opacity-100"
@@ -163,9 +163,11 @@ export function ProductCard({ p }: { p: ProductCardData }) {
       <div className="mt-4 flex items-start justify-between gap-3">
         <div>
           {p.categoryName && <div className="eyebrow">{p.categoryName}</div>}
-          <div className="mt-1 font-display text-lg leading-tight">{p.name}</div>
+          <div className="mt-1 font-display text-lg leading-tight">
+            <span className="link-sweep">{p.name}</span>
+          </div>
         </div>
-        <div className="text-right">
+        <div className="text-right transition-transform duration-500 group-hover:-translate-y-0.5">
           <div className="text-sm font-medium">{formatInr(p.price_inr)}</div>
           {p.compare_at_price_inr && p.compare_at_price_inr > p.price_inr && (
             <div className="text-xs text-muted-foreground line-through">

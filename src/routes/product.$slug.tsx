@@ -10,6 +10,10 @@ import { useWishlist } from "@/lib/wishlist";
 import { useRecentlyViewed } from "@/lib/recently-viewed";
 import { ProductCard } from "@/components/product-card";
 import { RecentlyViewed } from "@/components/recently-viewed";
+import { SizeGuide } from "@/components/size-guide";
+import { ProductReviews, useProductRating } from "@/components/product-reviews";
+import { StarRating } from "@/components/star-rating";
+import { AnimatedContent, Magnetic, SplitText, StaggerGrid, StaggerItem } from "@/components/animate";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/product/$slug")({
@@ -28,7 +32,7 @@ function ProductPage() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { isInWishlist, toggle } = useWishlist();
-  const { record } = useRecentlyViewed();
+  const { record, slugs: recentSlugs } = useRecentlyViewed();
   const [size, setSize] = useState<string | null>(null);
   const [activeImage, setActiveImage] = useState(0);
 
@@ -49,6 +53,8 @@ function ProductPage() {
   useEffect(() => {
     if (slug) record(slug);
   }, [slug, record]);
+
+  const { data: rating } = useProductRating(data?.id);
 
   const { data: related } = useQuery({
     queryKey: ["related-products", data?.id, (data?.category as any)?.name],
@@ -165,7 +171,15 @@ function ProductPage() {
           <div className="flex items-start justify-between gap-4">
             <div>
               {data.category && <div className="eyebrow">{(data.category as any).name}</div>}
-              <h1 className="mt-3 font-display text-4xl md:text-5xl">{data.name}</h1>
+              <SplitText as="h1" text={data.name} by="char" stagger={0.02} className="mt-3 block font-display text-4xl md:text-5xl" />
+              {(rating?.count ?? 0) > 0 && (
+                <div className="mt-3 flex items-center gap-2">
+                  <StarRating value={rating!.avg} />
+                  <span className="text-xs text-muted-foreground">
+                    {rating!.avg.toFixed(1)} · {rating!.count} review{rating!.count === 1 ? "" : "s"}
+                  </span>
+                </div>
+              )}
             </div>
             <button
               type="button"
@@ -178,7 +192,7 @@ function ProductPage() {
                 }
                 toggle(data.id);
               }}
-              className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border transition-colors ${
+              className={`press flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border transition-all duration-500 hover:scale-110 ${
                 liked ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background hover:border-primary"
               }`}
             >
@@ -204,7 +218,7 @@ function ProductPage() {
           <div className="mt-8">
             <div className="flex items-center justify-between">
               <div className="eyebrow">Size (UK)</div>
-              <button className="text-xs underline underline-offset-4">Size guide</button>
+              <SizeGuide onSelectSize={(uk) => setSize(uk)} />
             </div>
             <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-6">
               {sizes.map((s: any) => {
@@ -215,12 +229,12 @@ function ProductPage() {
                     <button
                       disabled={outOfStock}
                       onClick={() => setSize(s.size)}
-                      className={`w-full rounded-sm border px-3 py-3 text-sm transition-colors ${
+                      className={`press w-full rounded-sm border px-3 py-3 text-sm transition-all duration-300 ${
                         selected
-                          ? "border-primary bg-primary text-primary-foreground"
+                          ? "border-primary bg-primary text-primary-foreground scale-[1.04]"
                           : outOfStock
                             ? "cursor-not-allowed border-border/50 text-muted-foreground line-through"
-                            : "border-border hover:border-primary"
+                            : "border-border hover:border-primary hover:-translate-y-0.5"
                       }`}
                     >
                       {s.size.replace("UK ", "")}
@@ -242,18 +256,22 @@ function ProductPage() {
           </div>
 
           <div className="mt-8 flex flex-col gap-3">
-            <button
-              onClick={onAdd}
-              className="w-full rounded-full border border-primary py-4 text-sm font-medium transition-colors hover:bg-secondary"
-            >
-              Add to bag
-            </button>
-            <button
-              onClick={onBuyNow}
-              className="w-full rounded-full bg-primary py-4 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-            >
-              Buy now
-            </button>
+            <Magnetic strength={0.12}>
+              <button
+                onClick={onAdd}
+                className="press w-full rounded-full border border-primary py-4 text-sm font-medium transition-colors hover:bg-primary hover:text-primary-foreground"
+              >
+                Add to bag
+              </button>
+            </Magnetic>
+            <Magnetic strength={0.12}>
+              <button
+                onClick={onBuyNow}
+                className="press w-full rounded-full bg-primary py-4 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+              >
+                Buy now
+              </button>
+            </Magnetic>
           </div>
 
           <div className="mt-10 grid grid-cols-2 gap-6 border-t border-border/60 pt-6 text-xs text-muted-foreground">
@@ -265,13 +283,15 @@ function ProductPage() {
 
       {related && related.length > 0 && (
         <section className="mt-20 border-t border-border/60 py-16 md:py-24">
-          <div className="eyebrow">You may also like</div>
-          <h2 className="mt-3 font-display text-3xl md:text-4xl">Complete the look.</h2>
-          <div className="mt-8 grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-10 lg:grid-cols-4">
+          <AnimatedContent>
+            <div className="eyebrow">You may also like</div>
+            <SplitText as="h2" text="Complete the look." className="mt-3 block font-display text-3xl md:text-4xl" />
+          </AnimatedContent>
+          <StaggerGrid className="mt-8 grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-10 lg:grid-cols-4">
             {related.map((p: any) => (
-              <ProductCard
-                key={p.slug}
-                p={{
+              <StaggerItem key={p.slug}>
+                <ProductCard
+                  p={{
                   productId: p.id,
                   slug: p.slug,
                   name: p.name,
@@ -284,14 +304,49 @@ function ProductPage() {
                     .map((im: any) => im.url),
                   categoryName: (p.category as any)?.name,
                   membersOnly: p.members_only,
-                }}
-              />
+                  }}
+                />
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerGrid>
         </section>
       )}
 
-      <RecentlyViewed slugs={useRecentlyViewed().slugs} />
+      <ProductReviews productId={data.id} slug={slug} />
+
+      <RecentlyViewed slugs={recentSlugs} />
+
+      {/* Sticky mobile add-to-cart bar */}
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/95 backdrop-blur-md md:hidden">
+        <div className="flex items-center gap-3 px-4 py-3">
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-xs text-muted-foreground">{data.name}</div>
+            <div className="text-sm font-medium">{formatInr(data.price_inr)}</div>
+          </div>
+          <select
+            value={size ?? ""}
+            onChange={(e) => setSize(e.target.value || null)}
+            aria-label="Choose size"
+            className="rounded-full border border-input bg-background px-3 py-2.5 text-xs outline-none"
+          >
+            <option value="">Size</option>
+            {sizes
+              .filter((s: any) => s.stock > 0)
+              .map((s: any) => (
+                <option key={s.size} value={s.size}>
+                  {s.size.replace("UK ", "UK ")}
+                </option>
+              ))}
+          </select>
+          <button
+            onClick={onAdd}
+            className="press rounded-full bg-primary px-5 py-3 text-xs font-medium text-primary-foreground"
+          >
+            Add to bag
+          </button>
+        </div>
+      </div>
+      <div className="h-20 md:hidden" />
     </div>
   );
 }

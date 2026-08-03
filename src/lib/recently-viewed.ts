@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const KEY = "marche_recently_viewed";
 const MAX = 12;
@@ -13,15 +13,16 @@ export function useRecentlyViewed() {
     } catch {}
   }, []);
 
-  const record = (slug: string) => {
+  const record = useCallback((slug: string) => {
     setSlugs((prev) => {
+      if (prev[0] === slug) return prev;
       const next = [slug, ...prev.filter((s) => s !== slug)].slice(0, MAX);
       try {
         localStorage.setItem(KEY, JSON.stringify(next));
       } catch {}
       return next;
     });
-  };
+  }, []);
 
   return { slugs, record };
 }
