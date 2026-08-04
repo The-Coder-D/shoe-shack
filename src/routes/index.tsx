@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "@/components/product-card";
+import { MembersTeaserCard } from "@/components/members-teaser-card";
 import { ArrowRight } from "lucide-react";
 import floatingShoe from "@/assets/floating-shoe.png";
 import { AnimatedContent, CountUp, Magnetic, ShinyText, SplitText, StaggerGrid, StaggerItem, TiltCard } from "@/components/animate";
@@ -66,15 +67,9 @@ function Index() {
   const { data: featured } = useQuery({
     queryKey: ["featured-products"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("products")
-        .select("slug, name, price_inr, compare_at_price_inr, category:categories(name), product_images(url, sort_order)")
-        .eq("is_featured", true)
-        .eq("is_active", true)
-        .order("created_at", { ascending: false })
-        .limit(4);
+      const { data, error } = await supabase.rpc("get_shop_products");
       if (error) throw error;
-      return data ?? [];
+      return (data ?? []).slice(0, 4);
     },
   });
 
@@ -226,24 +221,36 @@ function Index() {
           </Link>
         </AnimatedContent>
         <StaggerGrid className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
-          {(featured ?? []).map((p: any) => (
-            <StaggerItem key={p.slug}>
+          {(featured ?? []).map((p: any) =>
+            p.locked ? (
+              <StaggerItem key={p.slug}>
+                <MembersTeaserCard
+                  p={{
+                    slug: p.slug,
+                    name: p.name,
+                    imageUrl: p.first_image ?? "/images/product-1.jpg",
+                    categoryName: p.category_name,
+                  }}
+                />
+              </StaggerItem>
+            ) : (
+              <StaggerItem key={p.slug}>
               <ProductCard
                 p={{
+                productId: p.id,
                 slug: p.slug,
                 name: p.name,
-                price_inr: p.price_inr,
+                price_inr: p.price_inr ?? 0,
                 compare_at_price_inr: p.compare_at_price_inr,
-                imageUrl: p.product_images?.[0]?.url ?? "/images/product-1.jpg",
-                images: (p.product_images ?? [])
-                  .slice()
-                  .sort((a: any, b: any) => a.sort_order - b.sort_order)
-                  .map((im: any) => im.url),
-                categoryName: p.category?.name,
+                imageUrl: p.first_image ?? "/images/product-1.jpg",
+                images: p.first_image ? [p.first_image] : ["/images/product-1.jpg"],
+                categoryName: p.category_name,
+                membersOnly: p.members_only,
                 }}
               />
-            </StaggerItem>
-          ))}
+              </StaggerItem>
+            ),
+          )}
         </StaggerGrid>
       </section>
 

@@ -142,6 +142,13 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           </div>
         )}
         <HoverCycler enabled={hovering} length={images.length} onTick={setIdx} />
+        {/* Hover reveal: soft scrim + view label */}
+        <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-t from-primary/25 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100 md:block" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 hidden justify-center pb-10 md:flex">
+          <span className="translate-y-3 rounded-full bg-background/90 px-4 py-1.5 text-[10px] font-semibold uppercase tracking-widest opacity-0 shadow-sm backdrop-blur-sm transition-all duration-500 ease-out group-hover:translate-y-0 group-hover:opacity-100">
+            View
+          </span>
+        </div>
         {p.membersOnly && (
           <span className="absolute left-3 top-3 rounded-full bg-primary/90 px-3 py-1 text-[10px] uppercase tracking-widest text-primary-foreground transition-transform duration-500 group-hover:-translate-y-0.5">
             Members
