@@ -44,30 +44,57 @@ export function SiteHeader() {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className="container-page flex items-center justify-between gap-6"
       >
-        <Link to="/" className="font-display text-2xl tracking-tight">
-          Marché<span className="text-accent">.</span>
+        <Link to="/" aria-label="Marché — home" className="group font-display text-2xl tracking-tight">
+          <span className="inline-flex items-end">
+            {Array.from("Marché").map((ch, i) => (
+              <motion.span
+                key={`${ch}-${i}`}
+                className="inline-block will-change-transform"
+                initial={{ y: "80%", opacity: 0 }}
+                animate={{ y: "0%", opacity: 1 }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.06 * i }}
+                whileHover={{ y: -4, color: "var(--color-accent)" }}
+              >
+                {ch}
+              </motion.span>
+            ))}
+            <motion.span
+              className="logo-dot"
+              whileHover={{ scale: 1.6, rotate: 12 }}
+              transition={{ type: "spring", stiffness: 320, damping: 16 }}
+            >
+              .
+            </motion.span>
+          </span>
         </Link>
 
         <nav className="relative hidden items-center gap-1 md:flex">
           {nav.map((n) => {
             const active = path === n.to;
             return (
-              <Link
+              <motion.div
                 key={n.to}
-                to={n.to}
-                className={`relative rounded-full px-4 py-2 text-sm transition-colors duration-300 ${
-                  active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-                }`}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 400, damping: 24 }}
               >
-                {active && (
-                  <motion.span
-                    layoutId="nav-pill"
-                    transition={{ type: "spring", stiffness: 260, damping: 30, mass: 0.9 }}
-                    className="absolute inset-0 -z-10 rounded-full bg-secondary"
-                  />
-                )}
-                {n.label}
-              </Link>
+                <Link
+                  to={n.to}
+                  className={`group relative block overflow-hidden rounded-full px-4 py-2 text-sm transition-colors duration-300 ${
+                    active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {active && (
+                    <motion.span
+                      layoutId="nav-pill"
+                      transition={{ type: "spring", stiffness: 260, damping: 30, mass: 0.9 }}
+                      className="absolute inset-0 -z-10 rounded-full bg-secondary"
+                    />
+                  )}
+                  <span className="pointer-events-none absolute inset-x-3 bottom-1.5 h-px origin-left scale-x-0 bg-accent transition-transform duration-500 ease-out group-hover:scale-x-100" />
+                  {n.label}
+                </Link>
+              </motion.div>
             );
           })}
         </nav>
