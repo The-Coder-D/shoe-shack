@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "@/components/product-card";
+import { MembersTeaserCard } from "@/components/members-teaser-card";
 import { ArrowRight } from "lucide-react";
 import floatingShoe from "@/assets/floating-shoe.png";
 import { AnimatedContent, CountUp, Magnetic, ShinyText, SplitText, StaggerGrid, StaggerItem, TiltCard } from "@/components/animate";
