@@ -104,7 +104,7 @@ export function SiteHeader() {
             <Link
               to="/account"
               aria-label="Account"
-              className="hidden h-10 w-10 items-center justify-center rounded-full transition-colors duration-300 hover:bg-secondary md:inline-flex"
+              className="hidden h-10 w-10 items-center justify-center rounded-full icon-pop hover:bg-secondary md:inline-flex"
             >
               <User className="h-5 w-5" />
             </Link>
@@ -112,7 +112,7 @@ export function SiteHeader() {
             <Link
               to="/auth"
               aria-label="Sign in"
-              className="hidden h-10 w-10 items-center justify-center rounded-full transition-colors duration-300 hover:bg-secondary md:inline-flex"
+              className="hidden h-10 w-10 items-center justify-center rounded-full icon-pop hover:bg-secondary md:inline-flex"
             >
               <User className="h-5 w-5" />
             </Link>
@@ -121,7 +121,7 @@ export function SiteHeader() {
             <Link
               to="/account"
               aria-label="Wishlist"
-              className="hidden h-10 w-10 items-center justify-center rounded-full transition-colors duration-300 hover:bg-secondary md:inline-flex"
+              className="hidden h-10 w-10 items-center justify-center rounded-full icon-pop hover:bg-secondary md:inline-flex"
             >
               <Heart className="h-5 w-5" />
             </Link>
@@ -129,7 +129,7 @@ export function SiteHeader() {
           <Link
             to="/cart"
             aria-label="Cart"
-            className="relative inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-300 hover:bg-secondary"
+            className="relative inline-flex h-10 w-10 items-center justify-center rounded-full icon-pop hover:bg-secondary"
           >
             <ShoppingBag className="h-5 w-5" />
             {count > 0 && (
@@ -139,7 +139,7 @@ export function SiteHeader() {
             )}
           </Link>
           <button
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-300 hover:bg-secondary md:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full icon-pop hover:bg-secondary md:hidden"
             onClick={() => setOpen((o) => !o)}
             aria-label="Menu"
           >
