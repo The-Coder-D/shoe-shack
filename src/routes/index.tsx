@@ -204,7 +204,7 @@ function Index() {
                 <div className="relative">
                   <div className="eyebrow">Shop</div>
                   <div className="mt-1 font-display text-2xl">
-                    <span className="link-sweep">{c.label}</span>
+                    <span className="link-sweep text-sheen">{c.label}</span>
                   </div>
                 </div>
                 <ArrowRight className="absolute right-5 top-5 h-4 w-4 -translate-x-2 opacity-0 transition-all duration-500 ease-out group-hover:translate-x-0 group-hover:opacity-100" />
@@ -216,7 +216,7 @@ function Index() {
 
       <section className="container-page py-16 md:py-24">
         <AnimatedContent className="flex items-end justify-between">
-          <div>
+          <div className="rule-grow">
             <div className="eyebrow">Featured</div>
             <SplitText as="h2" text="This month." className="mt-3 block font-display text-4xl md:text-5xl" />
           </div>
@@ -254,7 +254,7 @@ function Index() {
             { t: "Free shipping in India", d: "Two-day delivery to metros. 14-day exchanges, no questions asked.", n: 14, suffix: "-day exchanges" },
           ].map((b) => (
             <StaggerItem key={b.t}>
-              <div className="font-display text-2xl">{b.t}</div>
+              <div className="rule-grow font-display text-2xl text-sheen">{b.t}</div>
               <p className="mt-3 text-sm text-muted-foreground">{b.d}</p>
               <div className="mt-4 text-xs uppercase tracking-widest text-accent">
                 <CountUp to={b.n} />
