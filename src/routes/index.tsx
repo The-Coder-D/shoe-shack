@@ -81,6 +81,8 @@ function Index() {
   return (
     <div>
       <section ref={heroRef} className="relative overflow-hidden">
+        <div className="aurora" aria-hidden="true" />
+        <div className="grid-drift" aria-hidden="true" />
         <motion.img
           src={floatingShoe}
           alt=""
