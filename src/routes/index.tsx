@@ -148,6 +148,7 @@ function Index() {
       </section>
 
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
+        <div className="aurora opacity-60" aria-hidden="true" />
         <div className="container-page grid gap-10 py-20 md:grid-cols-12 md:py-28">
           <div className="md:col-span-4 md:pt-6">
             <div className="eyebrow opacity-70">In motion</div>
