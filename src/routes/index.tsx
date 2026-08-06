@@ -125,12 +125,15 @@ function Index() {
           <div className="md:col-span-6">
             <AnimatedContent delay={0.15} y={40}>
               <TiltCard className="group relative aspect-[4/5] overflow-hidden rounded-sm bg-secondary">
-                <img
+                <motion.img
                   src="/images/hero.jpg"
                   alt="Marché Atlas Low sneaker in cream"
                   width={1600}
                   height={1200}
-                  className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
+                  initial={false}
+                  whileHover={{ rotate: -8, scale: 1.08 }}
+                  transition={{ type: "spring", stiffness: 120, damping: 16, mass: 0.6 }}
+                  className="h-full w-full origin-center object-cover will-change-transform"
                 />
                 <div className="absolute bottom-6 left-6 rounded-sm bg-background/90 px-4 py-3 backdrop-blur transition-transform duration-700 ease-out group-hover:-translate-y-1">
                   <div className="eyebrow">New</div>
