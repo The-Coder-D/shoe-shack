@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "@/components/product-card";
 import { MembersTeaserCard } from "@/components/members-teaser-card";
-import { ProductGridSkeleton } from "@/components/product-skeleton";
+import { ProductCardSkeleton } from "@/components/product-skeleton";
 import { ArrowRight } from "lucide-react";
 import floatingShoe from "@/assets/floating-shoe.png";
 import { AnimatedContent, CountUp, Magnetic, ShinyText, SplitText, StaggerGrid, StaggerItem, TiltCard } from "@/components/animate";
@@ -228,7 +228,7 @@ function Index() {
           {featuredLoading &&
             Array.from({ length: 4 }).map((_, i) => (
               <StaggerItem key={`sk-${i}`}>
-                <ProductCardSkeletonInline index={i} />
+                <ProductCardSkeleton index={i} />
               </StaggerItem>
             ))}
           {(featured ?? []).map((p: any) =>
