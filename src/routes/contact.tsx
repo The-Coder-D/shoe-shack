@@ -16,7 +16,7 @@ function Contact() {
     <div className="container-page py-16 md:py-24">
       <div className="mx-auto max-w-3xl">
         <div className="eyebrow">Reach us</div>
-        <h1 className="mt-4 font-display text-5xl">In touch.</h1>
+        <h1 className="mt-4 font-display text-5xl"><span className="heading-hover">In touch.</span></h1>
         <div className="mt-10 grid gap-8 md:grid-cols-2">
           <div>
             <div className="font-medium">Customer care</div>

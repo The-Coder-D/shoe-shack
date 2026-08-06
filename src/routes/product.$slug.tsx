@@ -171,7 +171,7 @@ function ProductPage() {
           <div className="flex items-start justify-between gap-4">
             <div>
               {data.category && <div className="eyebrow">{(data.category as any).name}</div>}
-              <SplitText as="h1" text={data.name} by="char" stagger={0.02} className="mt-3 block font-display text-4xl md:text-5xl" />
+              <h1 className="mt-3 font-display text-4xl md:text-5xl"><span className="heading-hover"><SplitText text={data.name} by="char" stagger={0.02} /></span></h1>
               {(rating?.count ?? 0) > 0 && (
                 <div className="mt-3 flex items-center gap-2">
                   <StarRating value={rating!.avg} />
@@ -285,7 +285,7 @@ function ProductPage() {
         <section className="mt-20 border-t border-border/60 py-16 md:py-24">
           <AnimatedContent>
             <div className="eyebrow">You may also like</div>
-            <SplitText as="h2" text="Complete the look." className="mt-3 block font-display text-3xl md:text-4xl" />
+            <h2 className="mt-3 font-display text-3xl md:text-4xl"><span className="heading-hover"><SplitText text="Complete the look." /></span></h2>
           </AnimatedContent>
           <StaggerGrid className="mt-8 grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-10 lg:grid-cols-4">
             {related.map((p: any) => (

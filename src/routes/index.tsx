@@ -98,7 +98,7 @@ function Index() {
             <div className="eyebrow">
               <ShinyText>Autumn / Winter 26</ShinyText>
             </div>
-            <h1 className="mt-6 font-display text-5xl leading-[1.02] md:text-7xl">
+            <h1 className="mt-6 font-display text-5xl leading-[1.02] md:text-7xl [&_>_span]:heading-hover">
               <SplitText text="Considered" className="block" />
               <SplitText text="footwear," className="block" delay={0.08} />
               <SplitText text="made for" className="block" delay={0.16} />
@@ -218,7 +218,7 @@ function Index() {
         <AnimatedContent className="flex items-end justify-between">
           <div className="rule-grow">
             <div className="eyebrow">Featured</div>
-            <SplitText as="h2" text="This month." className="mt-3 block font-display text-4xl md:text-5xl" />
+            <h2 className="mt-3 font-display text-4xl md:text-5xl"><span className="heading-hover"><SplitText text="This month." /></span></h2>
           </div>
           <Link to="/shop" className="link-sweep hidden text-sm md:inline">
             View all
