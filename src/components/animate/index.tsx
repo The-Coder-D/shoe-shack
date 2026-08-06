@@ -11,6 +11,7 @@ export function SplitText({
   delay = 0,
   stagger = 0.045,
   as: Tag = "span",
+  interactive = true,
 }: {
   text: string;
   className?: string;
@@ -18,6 +19,7 @@ export function SplitText({
   delay?: number;
   stagger?: number;
   as?: "span" | "h1" | "h2" | "h3" | "p";
+  interactive?: boolean;
 }) {
   const ref = useRef<HTMLElement | null>(null);
   const inView = useInView(ref, { once: true, margin: "-10% 0px" });
@@ -32,10 +34,21 @@ export function SplitText({
       {parts.map((part, i) => (
         <span key={i} className="inline-block overflow-hidden align-bottom">
           <motion.span
-            className="inline-block"
+            className="inline-block cursor-default"
             initial={{ y: "110%", opacity: 0 }}
             animate={inView ? { y: "0%", opacity: 1 } : undefined}
             transition={{ duration: 0.75, ease: EASE, delay: delay + i * stagger }}
+            {...(interactive
+              ? {
+                  whileHover: { y: -6, rotate: -1.5, scale: 1.04 },
+                  transition: {
+                    duration: 0.75,
+                    ease: EASE,
+                    delay: delay + i * stagger,
+                    y: { type: "spring", stiffness: 320, damping: 18 },
+                  },
+                }
+              : {})}
           >
             {part === " " ? "\u00A0" : part}
             {by === "word" && i < parts.length - 1 ? "\u00A0" : ""}
