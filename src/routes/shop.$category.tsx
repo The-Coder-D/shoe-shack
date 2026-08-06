@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "@/components/product-card";
 import { MembersTeaserCard } from "@/components/members-teaser-card";
+import { ProductGridSkeleton } from "@/components/product-skeleton";
 import { AnimatedContent, ShinyText, SplitText, StaggerGrid, StaggerItem } from "@/components/animate";
 
 export const Route = createFileRoute("/shop/$category")({
@@ -63,15 +64,10 @@ function CategoryPage() {
           <div className="eyebrow">Collection</div>
           <h1 className="mt-3 font-display text-5xl capitalize">{category}</h1>
         </div>
-        <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-10 lg:grid-cols-4">
-          {Array.from({ length: skeletonCount }).map((_, i) => (
-            <div key={i} className="animate-pulse">
-              <div className="aspect-[3/4] w-full rounded-sm bg-secondary/60" />
-              <div className="mt-4 h-3 w-2/3 rounded-sm bg-secondary/60" />
-              <div className="mt-2 h-3 w-1/3 rounded-sm bg-secondary/40" />
-            </div>
-          ))}
-        </div>
+        <ProductGridSkeleton
+          count={skeletonCount}
+          className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-10 lg:grid-cols-4"
+        />
       </div>
     );
   }
@@ -82,7 +78,11 @@ function CategoryPage() {
         <div className="eyebrow">
           <ShinyText>Collection</ShinyText>
         </div>
-        <SplitText as="h1" text={data.cat.name} by="char" stagger={0.03} className="mt-3 block font-display text-5xl" />
+        <h1 className="mt-3 font-display text-5xl">
+          <span className="heading-hover">
+            <SplitText text={data.cat.name} by="char" stagger={0.03} />
+          </span>
+        </h1>
         {data.cat.description && <p className="mt-3 max-w-xl text-sm text-muted-foreground">{data.cat.description}</p>}
       </AnimatedContent>
       <StaggerGrid className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-10 lg:grid-cols-4">

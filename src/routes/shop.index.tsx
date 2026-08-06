@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "@/components/product-card";
 import { MembersTeaserCard } from "@/components/members-teaser-card";
+import { ProductGridSkeleton } from "@/components/product-skeleton";
 import { AnimatedContent, ShinyText, SplitText, StaggerGrid, StaggerItem } from "@/components/animate";
 
 export const Route = createFileRoute("/shop/")({
@@ -18,7 +19,7 @@ export const Route = createFileRoute("/shop/")({
 });
 
 function ShopIndex() {
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["shop-all"],
     queryFn: async () => {
       const { data, error } = await supabase.rpc("get_shop_products");
@@ -43,11 +44,21 @@ function ShopIndex() {
         <div className="eyebrow">
           <ShinyText>Collection</ShinyText>
         </div>
-        <SplitText as="h1" text="All footwear" by="char" stagger={0.03} className="mt-3 block font-display text-5xl" />
+        <h1 className="mt-3 font-display text-5xl">
+          <span className="heading-hover">
+            <SplitText text="All footwear" by="char" stagger={0.03} />
+          </span>
+        </h1>
         <p className="mt-3 max-w-xl text-sm text-muted-foreground">
           {data?.length ?? 0} styles available. Every pair is made to order.
         </p>
       </AnimatedContent>
+      {isLoading && (
+        <ProductGridSkeleton
+          count={8}
+          className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-10 lg:grid-cols-4"
+        />
+      )}
       <StaggerGrid className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-3 md:gap-10 lg:grid-cols-4">
         {(data ?? []).map((p) =>
           p.locked ? (

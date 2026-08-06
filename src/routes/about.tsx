@@ -17,7 +17,7 @@ function About() {
     <div className="container-page py-16 md:py-24">
       <div className="mx-auto max-w-3xl">
         <div className="eyebrow">Our story</div>
-        <h1 className="mt-4 font-display text-5xl md:text-6xl">Made with intent.</h1>
+        <h1 className="mt-4 font-display text-5xl md:text-6xl"><span className="heading-hover">Made with intent.</span></h1>
         <div className="mt-10 space-y-6 text-lg leading-relaxed text-muted-foreground">
           <p>Marché began in a small workshop in Bengaluru with a simple idea: the footwear industry produces too much, too fast, and cares too little for the people who make and wear it.</p>
           <p>We work in small runs — never more than a few hundred pairs per style — with a handful of family-run workshops. Full-grain leather from LWG-certified tanneries. Vulcanized rubber that lasts. Stitching we can trace by hand.</p>

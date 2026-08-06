@@ -364,3 +364,75 @@
   .icon-pop:hover { transform: none; }
   .text-sheen:hover { color: inherit; background-position: 200% center; }
 }
+
+/* ---------- Skeleton shimmer ---------- */
+
+@keyframes skeleton-sweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes skeleton-breathe {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@utility skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: color-mix(in oklab, var(--color-secondary) 75%, transparent);
+  animation: skeleton-breathe 2.4s ease-in-out infinite;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    color-mix(in oklab, var(--color-background) 70%, transparent) 50%,
+    transparent 80%
+  );
+  animation: skeleton-sweep 1.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+/* Heading hover: accent underline sweep + shimmer */
+@utility heading-hover {
+  position: relative;
+  display: inline-block;
+  background-image: linear-gradient(
+    100deg,
+    currentColor 34%,
+    color-mix(in oklab, var(--color-accent) 90%, white) 50%,
+    currentColor 66%
+  );
+  background-size: 220% auto;
+  background-position: 200% center;
+  -webkit-background-clip: text;
+  background-clip: text;
+  transition: background-position 1.1s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease;
+}
+.heading-hover::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -0.18em;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(to right, var(--color-accent), transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.heading-hover:hover {
+  color: transparent;
+  background-position: -60% center;
+}
+.heading-hover:hover::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton, .skeleton::after { animation: none; }
+  .heading-hover:hover { color: inherit; background-position: 200% center; }
+}
