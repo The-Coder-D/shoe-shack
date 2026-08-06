@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard } from "@/components/product-card";
 import { MembersTeaserCard } from "@/components/members-teaser-card";
+import { ProductGridSkeleton } from "@/components/product-skeleton";
 import { ArrowRight } from "lucide-react";
 import floatingShoe from "@/assets/floating-shoe.png";
 import { AnimatedContent, CountUp, Magnetic, ShinyText, SplitText, StaggerGrid, StaggerItem, TiltCard } from "@/components/animate";
@@ -64,7 +65,7 @@ function Index() {
     else el.addEventListener("loadeddata", tryPlay, { once: true });
   }, []);
 
-  const { data: featured } = useQuery({
+  const { data: featured, isLoading: featuredLoading } = useQuery({
     queryKey: ["featured-products"],
     queryFn: async () => {
       const { data, error } = await supabase.rpc("get_shop_products");
@@ -124,16 +125,16 @@ function Index() {
           </div>
           <div className="md:col-span-6">
             <AnimatedContent delay={0.15} y={40}>
-              <TiltCard className="group relative aspect-[4/5] overflow-hidden rounded-sm bg-secondary">
+              <TiltCard className="group relative aspect-[4/5] overflow-hidden rounded-sm bg-secondary [perspective:1200px]">
                 <motion.img
                   src="/images/hero.jpg"
                   alt="Marché Atlas Low sneaker in cream"
                   width={1600}
                   height={1200}
                   initial={false}
-                  whileHover={{ rotate: -8, scale: 1.08 }}
-                  transition={{ type: "spring", stiffness: 120, damping: 16, mass: 0.6 }}
-                  className="h-full w-full origin-center object-cover will-change-transform"
+                  whileHover={{ rotateY: -22, rotateX: 8, rotateZ: -3, scale: 1.1, z: 60 }}
+                  transition={{ type: "spring", stiffness: 110, damping: 15, mass: 0.7 }}
+                  className="h-full w-full object-cover will-change-transform [transform-style:preserve-3d] [backface-visibility:hidden]"
                 />
                 <div className="absolute bottom-6 left-6 rounded-sm bg-background/90 px-4 py-3 backdrop-blur transition-transform duration-700 ease-out group-hover:-translate-y-1">
                   <div className="eyebrow">New</div>
@@ -224,6 +225,12 @@ function Index() {
           </Link>
         </AnimatedContent>
         <StaggerGrid className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
+          {featuredLoading &&
+            Array.from({ length: 4 }).map((_, i) => (
+              <StaggerItem key={`sk-${i}`}>
+                <ProductCardSkeletonInline index={i} />
+              </StaggerItem>
+            ))}
           {(featured ?? []).map((p: any) =>
             p.locked ? (
               <StaggerItem key={p.slug}>
