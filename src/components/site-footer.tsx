@@ -15,9 +15,9 @@ export function SiteFooter() {
           <div className="eyebrow">Shop</div>
           <ul className="mt-4 space-y-2 text-sm">
             <li><Link to="/shop">All footwear</Link></li>
-            <li><Link to="/shop/sneakers">Sneakers</Link></li>
-            <li><Link to="/shop/boots">Boots</Link></li>
-            <li><Link to="/shop/formal">Formal</Link></li>
+            <li><Link to="/shop/$category" params={{ category: "sneakers" }}>Sneakers</Link></li>
+            <li><Link to="/shop/$category" params={{ category: "boots" }}>Boots</Link></li>
+            <li><Link to="/shop/$category" params={{ category: "formal" }}>Formal</Link></li>
           </ul>
         </div>
         <div>
